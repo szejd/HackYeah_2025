@@ -1,0 +1,27 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Home - My FastAPI App{% endblock %}
+
+{% block content %}
+<h2>HackYeah 2025</h2>
+<p>Let's go team!</p>
+<h2>Current Time in Major Cities</h2>
+<table>
+    <thead>
+        <tr>
+            <th>City</th>
+            <th>Timezone</th>
+            <th>Current Time</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in world_times %}
+        <tr>
+            <td>{{ item.city }}</td>
+            <td>{{ item.timezone }}</td>
+            <td>{{ item.current_time }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
