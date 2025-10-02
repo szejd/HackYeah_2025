@@ -35,7 +35,7 @@ jobs:
     
     - name: Lint & format code with ruff
       run: |
-        uv run ruff check src/ tests/
+        uv run ruff check app/ tests/
 
     - name: Run tests
       run: |
