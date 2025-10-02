@@ -2,7 +2,6 @@ name: CD Release Process
 
 on:
   push:
-    branches: [main]
     tags:
       - 'v*.*.*'  # Trigger when tags matching the pattern
 
