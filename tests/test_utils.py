@@ -1,5 +1,3 @@
-
-
 from app.utils.time_utils import get_time_in_timezone
 
 
