@@ -29,7 +29,8 @@ jobs:
       - name: Update Version Number
         run: |
           git config pull.rebase false  # Configure to use merge strategy
-          git pull origin main
+          git fetch origin main
+          git merge origin/main
           OLD_VERSION=$(grep ^version pyproject.toml | cut -d '"' -f 2)
           OLD_VERSION="\"$OLD_VERSION\""
           NEW_VERSION="\"${{ steps.extract_version.outputs.VERSION }}\""
