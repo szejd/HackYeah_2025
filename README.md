@@ -47,7 +47,7 @@ uv add some-package
 ### Linting & Formatting
 
 ```bash
-uv run ruff check src/ tests/
+uv run ruff check app/ tests/
 ```
 
 Consider adding it as a precommit.
@@ -59,7 +59,7 @@ We can also add type checking using mypy. The best option is to run [dmypy](http
 uv run dmypy start
 
 # Check files
-uv run dmypy check -- src/ tests/
+uv run dmypy check -- app/ tests/
 
 # Stop the daemon when done
 uv run dmypy stop
