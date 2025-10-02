@@ -1,7 +1,0 @@
-﻿fastapi
-uvicorn
-pytest
-jinja2
-ruff
-tzdata
-pytz
