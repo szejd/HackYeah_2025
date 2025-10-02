@@ -1,11 +1,10 @@
-from app.routes import health_check
-
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
+from app.routes import health_check
 from app.services.world_time import get_world_times
 
 app = FastAPI()
