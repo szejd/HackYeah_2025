@@ -20,3 +20,8 @@ async def home(request: Request):
     return templates.TemplateResponse(
         "index.html", {"request": request, "world_times": data}
     )
+
+
+@app.get("/greet")
+def greet(name: str = "World"):
+    return {"message": f"Hello, {name}!"}
