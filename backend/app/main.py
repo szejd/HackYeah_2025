@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -8,6 +10,9 @@ from app.routes import health_check
 from app.services.world_time import get_world_times
 from settings import SERVER_ADDRESS
 from db_connection import SessionLocal
+
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
 
 app = FastAPI()
 
@@ -40,7 +45,7 @@ def greet(name: str = "World"):
 # Usage example: opening a session
 if __name__ == "__main__":
     # Create a new session
-    session = SessionLocal()
+    session: Session = SessionLocal()
     try:
         pass
     finally:
