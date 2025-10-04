@@ -24,6 +24,7 @@ from app.models.user import (
     CoordinatorUpdate,
     # Login model
     UserLogin,
+    TokenResponse,
 )
 from app.crud.user import (
     # Registration
@@ -45,25 +46,19 @@ from app.crud.user import (
     delete_user,
 )
 from app.schemas.enums import UserType
+from app.utils.auth import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_active_user,
+)
+from app.schemas.db_models import User
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 # Dependency for database session
 DBSession = Annotated[Session, Depends(get_db)]
-
-
-# Helper function for password hashing (you should implement proper hashing)
-def hash_password(password: str) -> str:
-    """Hash password. TODO: Implement proper bcrypt/argon2 hashing."""
-    # This is a placeholder - implement proper password hashing!
-    import hashlib
-
-    return hashlib.sha256(password.encode()).hexdigest()
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password. TODO: Implement proper password verification."""
-    return hash_password(plain_password) == hashed_password
+AuthUser = Annotated[User, Depends(get_current_active_user)]
 
 
 # ==================== Registration Endpoints ====================
@@ -210,12 +205,17 @@ async def create_coordinator_account(
 # ==================== Authentication Endpoints ====================
 
 
-@router.post("/login", summary="User login")
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+    summary="User login",
+)
 async def login(credentials: UserLogin, db: DBSession):
     """
-    Authenticate a user and return user information.
+    Authenticate a user and return JWT access token.
 
-    TODO: Implement JWT token generation and return access token.
+    The token should be included in subsequent requests as:
+    Authorization: Bearer <token>
     """
     # Get user by email
     user = get_user_by_email(db, credentials.email)
@@ -223,6 +223,7 @@ async def login(credentials: UserLogin, db: DBSession):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     # Verify password
@@ -230,16 +231,76 @@ async def login(credentials: UserLogin, db: DBSession):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # TODO: Generate JWT token here
-    # For now, just return user info
-    return {
-        "message": "Login successful",
-        "user": UserResponse.model_validate(user),
-        # "access_token": "...",  # Add JWT token here
-        # "token_type": "bearer",
-    }
+    # Generate JWT token (sub must be a string per JWT spec)
+    access_token = create_access_token(
+        data={"sub": str(user.id), "email": user.email, "user_type": user.user_type.value}
+    )
+
+    return TokenResponse(
+        access_token=access_token,
+        token_type="bearer",
+        user=UserResponse.model_validate(user),
+    )
+
+
+# ==================== Current User Endpoints ====================
+
+
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    summary="Get current authenticated user",
+)
+async def get_current_user_info(current_user: AuthUser):
+    """
+    Get information about the currently authenticated user.
+
+    Requires valid JWT token in Authorization header.
+    """
+    return UserResponse.model_validate(current_user)
+
+
+@router.get(
+    "/me/profile",
+    summary="Get current user's complete profile",
+)
+async def get_current_user_profile(auth_user: AuthUser, db: DBSession):
+    """
+    Get complete profile for the currently authenticated user.
+
+    Requires valid JWT token in Authorization header.
+    Returns different profile structures based on user type.
+    """
+    user = get_user_with_profile(db, auth_user.id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User profile not found",
+        )
+
+    if user.user_type == UserType.VOLUNTEER:
+        return VolunteerProfile(
+            user=UserResponse.model_validate(user),
+            volunteer=VolunteerResponse.model_validate(user.volunteer),
+        )
+    elif user.user_type == UserType.ORGANISATION:
+        return OrganisationProfile(
+            user=UserResponse.model_validate(user),
+            organisation=OrganisationResponse.model_validate(user.organisation),
+        )
+    elif user.user_type == UserType.COORDINATOR:
+        return CoordinatorProfile(
+            user=UserResponse.model_validate(user),
+            coordinator=CoordinatorResponse.model_validate(user.coordinator),
+        )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User type is invalid!",
+        )
 
 
 # ==================== Read Endpoints ====================
@@ -250,9 +311,13 @@ async def login(credentials: UserLogin, db: DBSession):
     response_model=UserResponse,
     summary="Get user by ID",
 )
-async def get_user(user_id: int, db: DBSession):
-    """Get basic user information by ID."""
-    user = get_user_by_id(db, user_id)
+async def get_user(auth_user: AuthUser, db: DBSession):
+    """
+    Get basic user information by ID.
+
+    Requires valid JWT token in Authorization header.
+    """
+    user = get_user_by_id(db, auth_user.id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -265,7 +330,7 @@ async def get_user(user_id: int, db: DBSession):
     "/{user_id}/profile",
     summary="Get user profile",
 )
-async def get_user_profile(user_id: int, db: DBSession):
+async def get_user_profile(_: AuthUser, user_id: int, db: DBSession):
     """
     Get complete user profile including type-specific information.
 
@@ -273,6 +338,8 @@ async def get_user_profile(user_id: int, db: DBSession):
     - Volunteer: includes volunteer details
     - Organisation: includes organisation details
     - Coordinator: includes coordinator details
+
+    Requires valid JWT token in Authorization header.
     """
     user = get_user_with_profile(db, user_id)
     if not user:
@@ -311,6 +378,7 @@ async def get_user_profile(user_id: int, db: DBSession):
     summary="Update volunteer profile",
 )
 async def update_volunteer_profile(
+    _: AuthUser,
     user_id: int,
     volunteer_data: VolunteerUpdate,
     db: DBSession,
@@ -319,6 +387,8 @@ async def update_volunteer_profile(
     Update volunteer profile information.
 
     Only provided fields will be updated (partial update).
+
+    Requires valid JWT token in Authorization header.
     """
     # Verify user exists and is a volunteer
     user = get_user_by_id(db, user_id)
@@ -353,6 +423,7 @@ async def update_volunteer_profile(
     summary="Update organisation profile",
 )
 async def update_organisation_profile(
+    _: AuthUser,
     user_id: int,
     org_data: OrganisationUpdate,
     db: DBSession,
@@ -361,6 +432,8 @@ async def update_organisation_profile(
     Update organisation profile information.
 
     Only provided fields will be updated (partial update).
+
+    Requires valid JWT token in Authorization header.
     """
     # Verify user exists and is an organisation
     user = get_user_by_id(db, user_id)
@@ -395,6 +468,7 @@ async def update_organisation_profile(
     summary="Update coordinator profile",
 )
 async def update_coordinator_profile(
+    _: AuthUser,
     user_id: int,
     coord_data: CoordinatorUpdate,
     db: DBSession,
@@ -403,6 +477,8 @@ async def update_coordinator_profile(
     Update coordinator profile information.
 
     Only provided fields will be updated (partial update).
+
+    Requires valid JWT token in Authorization header.
     """
     # Verify user exists and is a coordinator
     user = get_user_by_id(db, user_id)
@@ -439,12 +515,14 @@ async def update_coordinator_profile(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete user",
 )
-async def delete_user_account(user_id: int, db: DBSession):
+async def delete_user_account(_: AuthUser, user_id: int, db: DBSession):
     """
     Delete a user account and all associated data.
 
     This will cascade delete the user's type-specific profile
     (volunteer, organisation, or coordinator).
+
+    Requires valid JWT token in Authorization header.
     """
     success = delete_user(db, user_id)
     if not success:
