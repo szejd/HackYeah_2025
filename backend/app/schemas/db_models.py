@@ -16,7 +16,6 @@ class User(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    verified: Mapped[bool] = mapped_column(Boolean)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     user_type: Mapped[UserType] = mapped_column(Enum, nullable=False)
@@ -39,7 +38,6 @@ class Volunteer(Base):
     last_name: Mapped[str] = mapped_column(String(100))
     birth_date: Mapped[datetime.date] = mapped_column(Date)
     phone_number: Mapped[str] = mapped_column(String(20))
-    availability: Mapped[int] = mapped_column(Text)
 
     user = relationship("User", back_populates="volunteer")
     skills = relationship("Skill", back_populates="volunteer")
@@ -55,6 +53,7 @@ class Organisation(Base):
     description: Mapped[str] = mapped_column(Text)
     phone_number: Mapped[str] = mapped_column(String(20))
     address: Mapped[str] = mapped_column(Text)
+    verified: Mapped[bool] = mapped_column(Boolean)
 
     user = relationship("User", back_populates="organisation")
 
@@ -68,6 +67,7 @@ class Coordinator(Base):
     first_name: Mapped[str] = mapped_column(String(100))
     last_name: Mapped[str] = mapped_column(String(100))
     phone_number: Mapped[str] = mapped_column(String(20))
+    verified: Mapped[bool] = mapped_column(Boolean)
 
     user = relationship("User", back_populates="coordinator")
 
