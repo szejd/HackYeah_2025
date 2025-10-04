@@ -4,7 +4,7 @@ from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 from sqlalchemy.orm import relationship
 import datetime
 from sqlalchemy import (
-    Integer, String, Enum, DateTime, Text, ForeignKey, func, Boolean, Date
+    Integer, String, Enum, DateTime, Text, ForeignKey, Boolean, Date
 )
 
 
@@ -20,8 +20,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     user_type: Mapped[UserType] = mapped_column(Enum, nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(), onupdate=func.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.datetime.now(), onupdate=datetime.datetime.now())
 
     # Relationships to subclasses
     volunteer = relationship("Volunteer", uselist=False, back_populates="user")
@@ -33,26 +33,27 @@ class Volunteer(Base):
     __tablename__ = 'volunteer'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
     first_name: Mapped[str] = mapped_column(String(100))
     last_name: Mapped[str] = mapped_column(String(100))
     birth_date: Mapped[datetime.date] = mapped_column(Date)
-    phone_number: Mapped[int] = mapped_column(String(20))
+    phone_number: Mapped[str] = mapped_column(String(20))
     availability: Mapped[int] = mapped_column(Text)
 
     user = relationship("User", back_populates="volunteer")
+    skills = relationship("Skill", back_populates="volunteer")
 
 
 class Organisation(Base):
     __tablename__ = 'organisation'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), primary_key=True)
-    org_name: Mapped[int] = mapped_column(String(255))
-    contact_person: Mapped[int] = mapped_column(String(100))
-    description: Mapped[int] = mapped_column(Text)
-    phone_number: Mapped[int] = mapped_column(String(20))
-    address: Mapped[int] = mapped_column(Text)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    org_name: Mapped[str] = mapped_column(String(255))
+    contact_person: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(Text)
+    phone_number: Mapped[str] = mapped_column(String(20))
+    address: Mapped[str] = mapped_column(Text)
 
     user = relationship("User", back_populates="organisation")
 
@@ -61,10 +62,11 @@ class Coordinator(Base):
     __tablename__ = 'coordinator'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), primary_key=True)
-    first_name: Mapped[int] = mapped_column(String(100))
-    last_name: Mapped[int] = mapped_column(String(100))
-    phone_number: Mapped[int] = mapped_column(String(20))
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    school: Mapped[str] = mapped_column(String(500))
+    first_name: Mapped[str] = mapped_column(String(100))
+    last_name: Mapped[str] = mapped_column(String(100))
+    phone_number: Mapped[str] = mapped_column(String(20))
 
     user = relationship("User", back_populates="coordinator")
 
@@ -74,3 +76,5 @@ class Skill(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     skill_name: Mapped[str] = mapped_column(Text)
+
+    volunteer = relationship("Volunteer", uselist=False, back_populates="skills")
