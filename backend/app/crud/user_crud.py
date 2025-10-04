@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel
 from datetime import date
 from app.schemas.db_models import User, Volunteer, Organisation, Coordinator
 from app.schemas.enums import UserType
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
 
 class UserInfo(BaseModel):
     email: str
@@ -32,7 +36,7 @@ class CoordinatorInfo(BaseModel):
     verified: bool = False
 
 
-def add_user(session, user: UserInfo, other_info: BaseModel) -> User | None:
+def add_user(session: Session, user: UserInfo, other_info: BaseModel) -> User | None:
     """
     Adds new user to db.
 
@@ -95,20 +99,69 @@ def add_user(session, user: UserInfo, other_info: BaseModel) -> User | None:
         raise Exception("Błąd podczas dodawania użytkownika!")
 
 
-def delete_user(session, user_id: int) -> bool:
+def update_user(session: Session, user_id: int, user_data: UserInfo, other_info: BaseModel) -> User | None:
+    """
+    Updates user and related data
+
+    :param session: SQLAlchemy Session
+    :param user_id: user ID to update
+    :param user_data: user data
+    :param other_info: data specific for Volunteer/Organisation/Coordinator
+    :return: updated User or None if not updated
+    """
+    user = session.query(User).filter(User.id == user_id).first()
+    if not user:
+        return None
+
+    if (
+        (user.user_type == UserType.VOLUNTEER and not isinstance(other_info, VolunteerInfo)) or
+        (user.user_type == UserType.ORGANISATION and not isinstance(other_info, OrganisationInfo)) or
+        (user.user_type == UserType.COORDINATOR and not isinstance(other_info, CoordinatorInfo))
+    ):
+        raise TypeError("Brak obowiązkowych informacji dla podanego typu użytkownika!")
+
+    try:
+        for field, value in user_data.dict(exclude_unset=True).items():
+            setattr(user, field, value)
+
+        if user.user_type == UserType.VOLUNTEER:
+            volunteer = session.query(Volunteer).filter(Volunteer.user_id == user_id).first()
+            if volunteer:
+                for field, value in other_info.dict(exclude_unset=True).items():
+                    setattr(volunteer, field, value)
+        elif user.user_type == UserType.ORGANISATION:
+            organisation = session.query(Organisation).filter(Organisation.user_id == user_id).first()
+            if organisation:
+                for field, value in other_info.dict(exclude_unset=True).items():
+                    setattr(organisation, field, value)
+        elif user.user_type == UserType.COORDINATOR:
+            coordinator = session.query(Coordinator).filter(Coordinator.user_id == user_id).first()
+            if coordinator:
+                for field, value in other_info.dict(exclude_unset=True).items():
+                    setattr(coordinator, field, value)
+
+        session.commit()
+        session.refresh(user)
+        return user
+
+    except Exception:
+        session.rollback()
+        raise Exception("Błąd podczas aktualizacji danych użytkownika!")
+
+
+def delete_user(session: Session, user_id: int) -> bool:
     """
     Removes user and related data from db.
 
     :param session: SQLAlchemy Session
     :param user_id: ID of user to delete
-    :return: True jeśli usunięto, False jeśli użytkownik nie istnieje
+    :return: True if removed, False if user doesn't exist
     """
     user = session.query(User).filter(User.id == user_id).first()
     if not user:
-        return False  # użytkownik nie istnieje
+        return False
 
     try:
-        # Usuń powiązane dane w zależności od typu użytkownika
         if user.user_type == UserType.VOLUNTEER:
             session.query(Volunteer).filter(Volunteer.user_id == user_id).delete()
         elif user.user_type == UserType.ORGANISATION:
@@ -116,7 +169,6 @@ def delete_user(session, user_id: int) -> bool:
         elif user.user_type == UserType.COORDINATOR:
             session.query(Coordinator).filter(Coordinator.user_id == user_id).delete()
 
-        # Usuń użytkownika
         session.delete(user)
         session.commit()
         return True
@@ -124,3 +176,25 @@ def delete_user(session, user_id: int) -> bool:
     except Exception:
         session.rollback()
         raise Exception("Błąd podczas usuwania użytkownika!")
+
+
+def get_user(session: Session, user_id: int) -> User | None:
+    """
+    Gets User data.
+
+    :param session: SQLAlchemy Session
+    :param user_id: user ID
+    :return: User data or None if not found
+    """
+    user = session.query(User).filter(User.id == user_id).first()
+    if not user:
+        return None
+
+    if user.user_type == UserType.VOLUNTEER:
+        _ = user.volunteer
+    elif user.user_type == UserType.ORGANISATION:
+        _ = user.organisation
+    elif user.user_type == UserType.COORDINATOR:
+        _ = user.coordinator
+
+    return user
