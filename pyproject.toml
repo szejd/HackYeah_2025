@@ -9,9 +9,9 @@ dependencies = [
     "jinja2>=3.1.6",
     "pytz>=2025.2",
     "tzdata>=2025.2",
-    "sqlalchemy",
-    "pydantic",
-    "pydantic-settings",
+    "sqlalchemy>=2.0.43",
+    "pydantic>=2.11.10",
+    "pydantic-settings>=2.11.0",
 ]
 
 [dependency-groups]

@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -5,8 +7,11 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 
 from app.routes import health_check
-from app.settings import SERVER_ADDRESS
-from app.db_connection import SessionLocal
+from app.config import SERVER_ADDRESS
+from app.logs import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -21,6 +26,11 @@ async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/greet")
+def greet(name: str = "World"):
+    return {"message": f"Hello, {name}!"}
+
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",  # Module path to FastAPI instance
@@ -28,18 +38,3 @@ if __name__ == "__main__":
         port=8000,
         reload=True,  # Auto-reload on code changes (dev only)
     )
-
-
-@app.get("/greet")
-def greet(name: str = "World"):
-    return {"message": f"Hello, {name}!"}
-
-
-# Usage example: opening a session
-if __name__ == "__main__":
-    # Create a new session
-    session = SessionLocal()
-    try:
-        pass
-    finally:
-        session.close()
