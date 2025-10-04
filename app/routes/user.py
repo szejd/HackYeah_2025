@@ -246,6 +246,26 @@ async def login(credentials: UserLogin, db: DBSession):
     )
 
 
+@router.post(
+    "/logout",
+    status_code=status.HTTP_200_OK,
+    summary="User logout",
+)
+async def logout(_: AuthUser):
+    """
+    Logout the current user.
+
+    Since JWT tokens are stateless, the actual logout is handled client-side
+    by discarding the token. This endpoint validates the token and confirms logout.
+
+    Requires valid JWT token in Authorization header.
+    """
+    return {
+        "message": "Successfully logged out",
+        "detail": "Please discard your access token",
+    }
+
+
 # ==================== Current User Endpoints ====================
 
 
