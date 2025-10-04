@@ -6,7 +6,8 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
 
 from app.schemas.db_models import Base
-from app.config import DB_NAME
+from app.config import DB_NAME, DB_TYPE, DB_USER, DB_PASSWORD
+from app.db_handler.db_util import ConnectionStringBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +22,10 @@ def create_db_engine(echo: bool = False) -> Engine:
     Returns:
         Engine: Configured SQLAlchemy engine
     """
+    db_conn = ConnectionStringBuilder.build(DB_TYPE, DB_NAME, DB_USER, DB_PASSWORD)
     try:
         engine = create_engine(
-            DB_NAME,
+            db_conn,
             echo=echo,
             future=True,
             poolclass=QueuePool,

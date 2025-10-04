@@ -1,11 +1,18 @@
 import logging
+from enum import StrEnum
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
+class DBType(StrEnum):
+    SQLITE = "sqlite"
+    POSTGRESQL = "postgresql"
+
+
 class EnvConfig(BaseSettings):
     SERVER_ADDRESS: str = ""
+    DB_TYPE: DBType = DBType.SQLITE
     DB_NAME: str = ""
     DB_USER: str = ""
     DB_PASSWORD: str = ""
@@ -31,6 +38,21 @@ class EnvConfig(BaseSettings):
 
         return logging.INFO
 
+    @field_validator("DB_TYPE", mode="before")
+    @classmethod
+    def validate_db_type(cls, value):
+        """Validate and parse the database type."""
+        if isinstance(value, DBType):
+            return value
+
+        if isinstance(value, str):
+            try:
+                return DBType[value.lower()]
+            except KeyError:
+                raise ValueError(f"Invalid DB_TYPE: {value}")
+
+        raise ValueError(f"Invalid DB_TYPE: {value}")
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -38,6 +60,7 @@ class EnvConfig(BaseSettings):
 
 env_config = EnvConfig()
 SERVER_ADDRESS = env_config.SERVER_ADDRESS
+DB_TYPE = env_config.DB_TYPE
 DB_NAME = env_config.DB_NAME
 DB_USER = env_config.DB_USER
 DB_PASSWORD = env_config.DB_PASSWORD
