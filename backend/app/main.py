@@ -23,7 +23,7 @@ async def home(request: Request):
 
 if __name__ == "__main__":
     uvicorn.run(
-        app,  # Module path to FastAPI instance
+        "main:app",  # Module path to FastAPI instance
         host="0.0.0.0",  # or "0.0.0.0" to be reachable externally
         port=8000,
         reload=True,  # Auto-reload on code changes (dev only)
