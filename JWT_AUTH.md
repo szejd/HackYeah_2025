@@ -195,3 +195,355 @@ async def protected_endpoint(current_user: CurrentUser):
         "user_id": current_user.id
     }
 ```
+
+# Frontend Logout Implementation Guide
+
+This guide explains how to implement logout functionality on the frontend to work with the JWT-based authentication API.
+
+## Overview
+
+Since the backend uses JWT tokens for authentication (stateless), the logout process primarily happens on the client side by discarding the token. The `/users/logout` endpoint validates the token before confirming logout.
+
+---
+
+## 1. Store the JWT Token
+
+When the user logs in, store the token securely:
+
+```javascript
+// After successful login response
+const loginResponse = await fetch('/users/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+});
+
+const data = await loginResponse.json();
+
+// Store the token (choose one approach):
+localStorage.setItem('access_token', data.access_token);  // Option 1: localStorage
+sessionStorage.setItem('access_token', data.access_token); // Option 2: sessionStorage
+// Or use cookies with httpOnly flag for better security
+```
+
+**Storage Options:**
+
+- `localStorage`: Persists across browser sessions (survives closing/reopening browser)
+- `sessionStorage`: Only persists for the current browser session
+- `httpOnly cookies`: Most secure, but requires backend cookie handling
+
+---
+
+## 2. Include Token in Authenticated Requests
+
+For all protected endpoints, include the token in the Authorization header:
+
+```javascript
+const token = localStorage.getItem('access_token');
+
+const response = await fetch('/users/me', {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+});
+```
+
+---
+
+## 3. Implement Logout Function
+
+Create a logout function that:
+
+1. Calls the backend logout endpoint (optional but recommended)
+2. Removes the token from storage
+3. Redirects to login page
+
+```javascript
+async function logout() {
+    const token = localStorage.getItem('access_token');
+    
+    try {
+        // Optional: Call the backend logout endpoint to validate token
+        await fetch('/users/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+    } finally {
+        // Always clear the token, even if the API call fails
+        localStorage.removeItem('access_token');
+        // Clear any other user-related data
+        localStorage.removeItem('user_data');
+        
+        // Redirect to login page
+        window.location.href = '/login';
+    }
+}
+```
+
+---
+
+## 4. Handle Token Expiration
+
+Implement automatic logout when token expires or becomes invalid:
+
+```javascript
+async function makeAuthenticatedRequest(url, options = {}) {
+    const token = localStorage.getItem('access_token');
+    
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    
+    // If token expired or invalid, logout automatically
+    if (response.status === 401) {
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+        throw new Error('Session expired. Please login again.');
+    }
+    
+    return response;
+}
+
+// Use this wrapper for all authenticated requests
+makeAuthenticatedRequest('/users/me/profile')
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error(err));
+```
+
+---
+
+## 5. Add Logout Button to UI
+
+### HTML Example
+
+```html
+<button id="logoutBtn" onclick="logout()">Logout</button>
+```
+
+### Or with Event Listener
+
+```html
+<button id="logoutBtn">Logout</button>
+
+<script>
+document.getElementById('logoutBtn').addEventListener('click', logout);
+</script>
+```
+
+---
+
+## 6. Optional: Check Token Expiration
+
+For better UX, check if the token is expired before making requests:
+
+```javascript
+/**
+ * Decode JWT and check if it's expired
+ * @param {string} token - JWT token
+ * @returns {boolean} - true if expired, false otherwise
+ */
+function isTokenExpired(token) {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const exp = payload.exp * 1000; // Convert to milliseconds
+        return Date.now() >= exp;
+    } catch (e) {
+        return true; // If we can't decode, treat as expired
+    }
+}
+
+// Check before each request
+const token = localStorage.getItem('access_token');
+if (!token || isTokenExpired(token)) {
+    logout();
+}
+```
+
+---
+
+## 7. Complete Example: Auth Utility Module
+
+Here's a complete example combining all the concepts:
+
+```javascript
+// auth.js - Authentication utility module
+
+class AuthService {
+    constructor() {
+        this.TOKEN_KEY = 'access_token';
+        this.USER_KEY = 'user_data';
+    }
+
+    /**
+     * Store authentication token and user data
+     */
+    setAuth(token, user) {
+        localStorage.setItem(this.TOKEN_KEY, token);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    }
+
+    /**
+     * Get stored authentication token
+     */
+    getToken() {
+        return localStorage.getItem(this.TOKEN_KEY);
+    }
+
+    /**
+     * Get stored user data
+     */
+    getUser() {
+        const user = localStorage.getItem(this.USER_KEY);
+        return user ? JSON.parse(user) : null;
+    }
+
+    /**
+     * Check if user is authenticated
+     */
+    isAuthenticated() {
+        const token = this.getToken();
+        if (!token) return false;
+        return !this.isTokenExpired(token);
+    }
+
+    /**
+     * Check if token is expired
+     */
+    isTokenExpired(token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const exp = payload.exp * 1000;
+            return Date.now() >= exp;
+        } catch (e) {
+            return true;
+        }
+    }
+
+    /**
+     * Login user
+     */
+    async login(email, password) {
+        const response = await fetch('/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (!response.ok) {
+            throw new Error('Login failed');
+        }
+
+        const data = await response.json();
+        this.setAuth(data.access_token, data.user);
+        return data;
+    }
+
+    /**
+     * Logout user
+     */
+    async logout() {
+        const token = this.getToken();
+        
+        try {
+            // Call backend logout endpoint
+            await fetch('/users/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            // Always clear local data
+            localStorage.removeItem(this.TOKEN_KEY);
+            localStorage.removeItem(this.USER_KEY);
+            window.location.href = '/login';
+        }
+    }
+
+    /**
+     * Make authenticated API request
+     */
+    async request(url, options = {}) {
+        const token = this.getToken();
+        
+        if (!token || this.isTokenExpired(token)) {
+            await this.logout();
+            throw new Error('Session expired');
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                ...options.headers,
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status === 401) {
+            await this.logout();
+            throw new Error('Unauthorized');
+        }
+
+        return response;
+    }
+}
+
+// Create singleton instance
+const authService = new AuthService();
+export default authService;
+```
+
+### Usage Example
+
+```javascript
+import authService from './auth.js';
+
+// Login
+async function handleLogin(email, password) {
+    try {
+        const data = await authService.login(email, password);
+        console.log('Logged in:', data.user);
+        window.location.href = '/dashboard';
+    } catch (error) {
+        console.error('Login failed:', error);
+        alert('Login failed. Please check your credentials.');
+    }
+}
+
+// Logout
+async function handleLogout() {
+    await authService.logout();
+}
+
+// Make authenticated request
+async function fetchUserProfile() {
+    try {
+        const response = await authService.request('/users/me/profile');
+        const profile = await response.json();
+        console.log('Profile:', profile);
+    } catch (error) {
+        console.error('Failed to fetch profile:', error);
+    }
+}
+
+// Check if authenticated
+if (!authService.isAuthenticated()) {
+    window.location.href = '/login';
+}
+```
