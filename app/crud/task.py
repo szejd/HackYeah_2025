@@ -4,6 +4,7 @@ from event import EventModel
 from organisation import OrganisationModel
 from requirement import RequirementModel
 
+
 class TaskModel(BaseModel):
     id: int
     name: str
@@ -12,6 +13,6 @@ class TaskModel(BaseModel):
     organisation_id: int
     event_id: int | None = None
     event: EventModel | None = None
-    organisation: OrganisationModel = None
+    organisation: OrganisationModel | None = None
     time_logs: list[TimeLogModel]
     requirements: list[RequirementModel]

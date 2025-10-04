@@ -25,7 +25,7 @@ from app.models.user import (
     # Login model
     UserLogin,
 )
-from app.crud import (
+from app.crud.user import (
     # Registration
     register_volunteer,
     register_organisation,

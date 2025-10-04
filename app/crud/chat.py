@@ -1,10 +1,12 @@
 from pydantic import BaseModel
 from datetime import date
-from user import UserModel
 from message import MessageModel
+
+from app.models.user import UserResponse
+
 
 class ChatModel(BaseModel):
     id: int
     created_at: date
-    user: list[UserModel]
+    user: list[UserResponse]
     messages = list[MessageModel]

@@ -1,7 +1,8 @@
-from user import UserModel
+from app.models.user import UserResponse
 from domain import DomainModel
 
-class OrganisationModel(UserModel):
+
+class OrganisationModel(UserResponse):
     id: int
     user_id: int
     org_name: str

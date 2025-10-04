@@ -1,11 +1,12 @@
-from user import UserModel
+from app.models.user import UserResponse
 from datetime import date
 from skill import SkillModel
 from domain import DomainModel
 from review import ReviewModel
 from certificate import CertificateModel
 
-class VolunteerModel(UserModel):
+
+class VolunteerModel(UserResponse):
     first_name: str
     last_name: str
     birth_date: date

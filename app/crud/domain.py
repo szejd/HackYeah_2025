@@ -1,8 +1,9 @@
 from pydantic import BaseModel
-from user import UserModel
+from app.models.user import UserResponse
+
 
 class DomainModel(BaseModel):
     id: int
     name: str
-    description: str = None
-    users: list[UserModel]
+    description: str | None = None
+    users: list[UserResponse]

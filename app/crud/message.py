@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from datetime import date
 from chat import ChatModel
-from user import UserModel
+from app.models.user import UserResponse
+
 
 class MessageModel(BaseModel):
     id: int
@@ -10,4 +11,4 @@ class MessageModel(BaseModel):
     content: str
     sent_at: date
     chat: ChatModel
-    sender: UserModel
+    sender: UserResponse
