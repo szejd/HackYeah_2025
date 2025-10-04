@@ -1,6 +1,5 @@
 """CRUD operations for User-related database operations."""
 
-from typing import TYPE_CHECKING
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
@@ -15,9 +14,6 @@ from app.models.user import (
     CoordinatorCreate,
     CoordinatorUpdate,
 )
-
-
-from sqlalchemy.orm import Session
 
 
 # User CRUD Operations
