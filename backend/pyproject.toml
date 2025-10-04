@@ -9,6 +9,7 @@ dependencies = [
     "jinja2>=3.1.6",
     "pytz>=2025.2",
     "tzdata>=2025.2",
+    "sqlalchemy",
 ]
 
 [dependency-groups]

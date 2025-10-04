@@ -1,4 +1,4 @@
-from app.utils.time_utils import get_time_in_timezone
+from backend.app.utils.time_utils import get_time_in_timezone
 
 
 def test_get_time_in_timezone():
