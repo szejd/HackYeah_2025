@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
-from app.schemas.db_models import Location, Volunteer, Organisation, Coordinator
+from app.schemas.db_models import Location
 from app.schemas.enums import LocationType, UserType
 
 if TYPE_CHECKING:

@@ -6,6 +6,7 @@ class UserType(Enum):
     ORGANISATION = "organisation"
     COORDINATOR = "coordinator"
 
+
 class LocationType(Enum):
     VOLUNTEER = "volunteer"
     ORGANISATION = "organisation"

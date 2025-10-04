@@ -3,6 +3,7 @@ from datetime import date
 from app.schemas.db_models import User, Volunteer, Organisation, Coordinator
 from app.schemas.enums import UserType
 
+
 class UserInfo(BaseModel):
     email: str
     password_hash: str
@@ -10,11 +11,13 @@ class UserInfo(BaseModel):
     created_at: date | None = None
     updated_at: date | None = None
 
+
 class VolunteerInfo(BaseModel):
     first_name: str
     last_name: str
     birth_date: date
     phone_number: str
+
 
 class OrganisationInfo(BaseModel):
     org_name: str
@@ -23,6 +26,7 @@ class OrganisationInfo(BaseModel):
     phone_number: str
     address: str
     verified: bool = False
+
 
 class CoordinatorInfo(BaseModel):
     first_name: str
@@ -42,17 +46,13 @@ def add_user(session, user: UserInfo, other_info: BaseModel) -> User | None:
     :return: User or None if not added
     """
     if (
-            (user.user_type == UserType.VOLUNTEER and not isinstance(other_info, VolunteerInfo)) or
-            (user.user_type == UserType.ORGANISATION and not isinstance(other_info, OrganisationInfo)) or
-            (user.user_type == UserType.COORDINATOR and not isinstance(other_info, CoordinatorInfo))
+        (user.user_type == UserType.VOLUNTEER and not isinstance(other_info, VolunteerInfo))
+        or (user.user_type == UserType.ORGANISATION and not isinstance(other_info, OrganisationInfo))
+        or (user.user_type == UserType.COORDINATOR and not isinstance(other_info, CoordinatorInfo))
     ):
         raise TypeError("Brak obowiązkowych informacji dla podanego typu użytkownika!")
 
-    new_user = User(
-        email=user.email,
-        password_hash=user.password_hash,
-        user_type=user.user_type
-    )
+    new_user = User(email=user.email, password_hash=user.password_hash, user_type=user.user_type)
     try:
         session.add(new_user)
         session.flush()

@@ -2,7 +2,8 @@ from app.crud.locations import LocationData
 import folium
 import os
 from pathlib import Path
-from app.schemas.enums import LocationType, UserType
+from app.schemas.enums import LocationType
+
 
 class OSMMap:
     def __init__(self, center=(50.061945, 19.936857), zoom_start=13):
@@ -17,7 +18,7 @@ class OSMMap:
             icon = folium.Icon(color="pink")
         else:
             return
-        marker = folium.Marker((lat, lon), popup = label if label else f"({lat}, {lon})", icon=icon)
+        marker = folium.Marker((lat, lon), popup=label if label else f"({lat}, {lon})", icon=icon)
         # marker = folium.Marker((lat, lon), popup=html_message, icon=icon,
         #               tooltip=marker_object.marker_name)
         # self.markers.append({'lat': lat, 'lon': lon, 'label': label})
@@ -33,7 +34,9 @@ class OSMMap:
 
 
 def generate_map_with_locations(locations: list[LocationData], map_filename: str = "osm_map.html"):
-    map_location = Path(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "templates", map_filename))
+    map_location = Path(
+        os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "templates", map_filename)
+    )
     my_map = OSMMap()
     my_map.add_marker(50.0530, 19.9336, "Smok Wawelski", LocationType.ORGANISATION)
     my_map.add_marker(50.0617, 19.9334, "Collegium Maius", LocationType.ORGANISATION)

@@ -139,7 +139,6 @@ class Location(Base):
     events: Mapped[list["Event"]] = relationship("Event", back_populates="location")
 
 
-
 class Event(Base):
     __tablename__ = "event"
     id: Mapped[int] = mapped_column(primary_key=True)
