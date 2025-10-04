@@ -47,8 +47,16 @@ class EnvConfig(BaseSettings):
 
         if isinstance(value, str):
             try:
-                return DBType[value.lower()]
-            except KeyError:
+                # Try to match by value (e.g., "sqlite" or "postgresql")
+                for db_type in DBType:
+                    if db_type.value.lower() == value.lower():
+                        return db_type
+                # If not found, raise error
+                valid_values = ", ".join([dt.value for dt in DBType])
+                raise ValueError(f"Invalid DB_TYPE: {value}. Valid values: {valid_values}")
+            except Exception as e:
+                if isinstance(e, ValueError):
+                    raise
                 raise ValueError(f"Invalid DB_TYPE: {value}")
 
         raise ValueError(f"Invalid DB_TYPE: {value}")

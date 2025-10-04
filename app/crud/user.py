@@ -1,210 +1,520 @@
-from pydantic import BaseModel
-from datetime import date
+"""CRUD operations for User-related database operations."""
+
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+
 from app.schemas.db_models import User, Volunteer, Organisation, Coordinator
 from app.schemas.enums import UserType
-<<<<<<<< HEAD:app/crud/user_crud.py
+from app.models.user import (
+    UserCreate,
+    VolunteerCreate,
+    VolunteerUpdate,
+    OrganisationCreate,
+    OrganisationUpdate,
+    CoordinatorCreate,
+    CoordinatorUpdate,
+)
+
+
 from sqlalchemy.orm import Session
-========
-from locations import Location
-from chat import ChatModel
-from domain import DomainModel
-if TYPE_CHECKING:
-    from sqlalchemy.orm import Session
->>>>>>>> add_data_to_db:app/crud/user.py
-
-class UserModel(BaseModel):
-    email: str
-    password_hash: str
-    user_type: UserType
-    location_id: int | None = None
-    created_at: date | None = None
-    updated_at: date | None = None
-    location: Location | None = None
-    chats: ChatModel | None = None
-    domains: DomainModel | None = None
 
 
-
-class VolunteerInfo(BaseModel):
-    first_name: str
-    last_name: str
-    birth_date: date
-    phone_number: str
-
-class OrganisationInfo(BaseModel):
-    org_name: str
-    contact_person: str
-    description: str
-    phone_number: str
-    address: str
-    verified: bool = False
-
-class CoordinatorInfo(BaseModel):
-    first_name: str
-    last_name: str
-    phone_number: str
-    school: str
-    verified: bool = False
+# User CRUD Operations
 
 
-def add_user(session: Session, user: UserModel, other_info: BaseModel) -> User | None:
+def get_user_by_id(session: Session, user_id: int) -> User | None:
     """
-    Adds new user to db.
+    Get a user by their ID.
 
-    :param session: SQLAlchemy Session
-    :param user: data for User
-    :param other_info: data specific for Volunteer/Organisation/Coordinator
-    :return: User or None if not added
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+
+    Returns:
+        User object or None if not found
     """
-    if (
-            (user.user_type == UserType.VOLUNTEER and not isinstance(other_info, VolunteerInfo)) or
-            (user.user_type == UserType.ORGANISATION and not isinstance(other_info, OrganisationInfo)) or
-            (user.user_type == UserType.COORDINATOR and not isinstance(other_info, CoordinatorInfo))
-    ):
-        raise TypeError("Brak obowiązkowych informacji dla podanego typu użytkownika!")
+    return session.query(User).filter(User.id == user_id).first()
 
+
+def get_user_by_email(session: Session, email: str) -> User | None:
+    """
+    Get a user by their email address.
+
+    Args:
+        session: SQLAlchemy Session
+        email: The user's email
+
+    Returns:
+        User object or None if not found
+    """
+    return session.query(User).filter(User.email == email).first()
+
+
+def create_user(
+    session: Session,
+    user_data: UserCreate,
+    password_hash: str,
+    location_id: int | None = None,
+) -> User:
+    """
+    Create a new base user.
+
+    Args:
+        session: SQLAlchemy Session
+        user_data: User creation data
+        password_hash: Hashed password
+        location_id: Optional location ID
+
+    Returns:
+        Created User object
+
+    Raises:
+        IntegrityError: If email already exists
+    """
     new_user = User(
-        email=user.email,
-        password_hash=user.password_hash,
-        user_type=user.user_type
+        email=user_data.email,
+        password_hash=password_hash,
+        user_type=user_data.user_type,
+        location_id=location_id,
     )
     try:
         session.add(new_user)
         session.flush()
-        if user.user_type == UserType.VOLUNTEER:
-            volunteer = Volunteer(
-                user_id=new_user.id,
-                first_name=other_info.first_name,
-                last_name=other_info.last_name,
-                birth_date=other_info.birth_date,
-                phone_number=other_info.phone_number,
-            )
-            session.add(volunteer)
-        elif user.user_type == UserType.ORGANISATION:
-            organisation = Organisation(
-                user_id=new_user.id,
-                org_name=other_info.org_name,
-                contact_person=other_info.contact_person,
-                description=other_info.description,
-                phone_number=other_info.phone_number,
-                address=other_info.address,
-                verified=other_info.verified,
-            )
-            session.add(organisation)
-        elif user.user_type == UserType.COORDINATOR:
-            coordinator = Coordinator(
-                user_id=new_user.id,
-                first_name=other_info.first_name,
-                last_name=other_info.last_name,
-                school=other_info.school,
-                phone_number=other_info.phone_number,
-                verified=other_info.verified,
-            )
-            session.add(coordinator)
-        session.commit()
-        session.refresh(new_user)
         return new_user
-
-    except Exception:
+    except IntegrityError:
         session.rollback()
-        raise Exception("Błąd podczas dodawania użytkownika!")
+        raise ValueError(f"User with email {user_data.email} already exists")
 
 
-def update_user(session: Session, user_id: int, user_data: UserModel, other_info: BaseModel) -> User | None:
+# Volunteer CRUD Operations
+
+
+def create_volunteer(
+    session: Session,
+    user: User,
+    volunteer_data: VolunteerCreate,
+) -> Volunteer:
     """
-    Updates user and related data
+    Create a new volunteer profile.
 
-    :param session: SQLAlchemy Session
-    :param user_id: user ID to update
-    :param user_data: user data
-    :param other_info: data specific for Volunteer/Organisation/Coordinator
-    :return: updated User or None if not updated
+    Args:
+        session: SQLAlchemy Session
+        user: User object to associate with
+        volunteer_data: Volunteer creation data
+
+    Returns:
+        Created Volunteer object
+    """
+    volunteer = Volunteer(
+        user_id=user.id,
+        first_name=volunteer_data.first_name,
+        last_name=volunteer_data.last_name,
+        birth_date=volunteer_data.birth_date,
+        phone_number=volunteer_data.phone_number,
+    )
+    session.add(volunteer)
+    return volunteer
+
+
+def get_volunteer_by_user_id(session: Session, user_id: int) -> Volunteer | None:
+    """
+    Get a volunteer by their user ID.
+
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+
+    Returns:
+        Volunteer object or None if not found
+    """
+    return session.query(Volunteer).filter(Volunteer.user_id == user_id).first()
+
+
+# Organisation CRUD Operations
+
+
+def create_organisation(
+    session: Session,
+    user: User,
+    org_data: OrganisationCreate,
+) -> Organisation:
+    """
+    Create a new organisation profile.
+
+    Args:
+        session: SQLAlchemy Session
+        user: User object to associate with
+        org_data: Organisation creation data
+
+    Returns:
+        Created Organisation object
+    """
+    organisation = Organisation(
+        user_id=user.id,
+        org_name=org_data.org_name,
+        contact_person=org_data.contact_person,
+        description=org_data.description,
+        phone_number=org_data.phone_number,
+        address=org_data.address,
+        verified=org_data.verified,
+    )
+    session.add(organisation)
+    return organisation
+
+
+def get_organisation_by_user_id(session: Session, user_id: int) -> Organisation | None:
+    """
+    Get an organisation by their user ID.
+
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+
+    Returns:
+        Organisation object or None if not found
+    """
+    return session.query(Organisation).filter(Organisation.user_id == user_id).first()
+
+
+# Coordinator CRUD Operations
+
+
+def create_coordinator(
+    session: Session,
+    user: User,
+    coord_data: CoordinatorCreate,
+) -> Coordinator:
+    """
+    Create a new coordinator profile.
+
+    Args:
+        session: SQLAlchemy Session
+        user: User object to associate with
+        coord_data: Coordinator creation data
+
+    Returns:
+        Created Coordinator object
+    """
+    coordinator = Coordinator(
+        user_id=user.id,
+        first_name=coord_data.first_name,
+        last_name=coord_data.last_name,
+        school=coord_data.school,
+        phone_number=coord_data.phone_number,
+        verified=coord_data.verified,
+    )
+    session.add(coordinator)
+    return coordinator
+
+
+def get_coordinator_by_user_id(session: Session, user_id: int) -> Coordinator | None:
+    """
+    Get a coordinator by their user ID.
+
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+
+    Returns:
+        Coordinator object or None if not found
+    """
+    return session.query(Coordinator).filter(Coordinator.user_id == user_id).first()
+
+
+# Update Operations
+
+
+def update_volunteer(
+    session: Session,
+    user_id: int,
+    volunteer_data: VolunteerUpdate,
+) -> Volunteer | None:
+    """
+    Update volunteer profile information.
+
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+        volunteer_data: Volunteer update data (only fields to update)
+
+    Returns:
+        Updated Volunteer object or None if not found
+    """
+    volunteer = get_volunteer_by_user_id(session, user_id)
+    if not volunteer:
+        return None
+
+    try:
+        # Update only provided fields
+        for field, value in volunteer_data.model_dump(exclude_unset=True).items():
+            setattr(volunteer, field, value)
+
+        session.commit()
+        session.refresh(volunteer)
+        return volunteer
+    except Exception as e:
+        session.rollback()
+        raise ValueError(f"Failed to update volunteer: {str(e)}")
+
+
+def update_organisation(
+    session: Session,
+    user_id: int,
+    org_data: OrganisationUpdate,
+) -> Organisation | None:
+    """
+    Update organisation profile information.
+
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+        org_data: Organisation update data (only fields to update)
+
+    Returns:
+        Updated Organisation object or None if not found
+    """
+    organisation = get_organisation_by_user_id(session, user_id)
+    if not organisation:
+        return None
+
+    try:
+        # Update only provided fields
+        for field, value in org_data.model_dump(exclude_unset=True).items():
+            setattr(organisation, field, value)
+
+        session.commit()
+        session.refresh(organisation)
+        return organisation
+    except Exception as e:
+        session.rollback()
+        raise ValueError(f"Failed to update organisation: {str(e)}")
+
+
+def update_coordinator(
+    session: Session,
+    user_id: int,
+    coord_data: CoordinatorUpdate,
+) -> Coordinator | None:
+    """
+    Update coordinator profile information.
+
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+        coord_data: Coordinator update data (only fields to update)
+
+    Returns:
+        Updated Coordinator object or None if not found
+    """
+    coordinator = get_coordinator_by_user_id(session, user_id)
+    if not coordinator:
+        return None
+
+    try:
+        # Update only provided fields
+        for field, value in coord_data.model_dump(exclude_unset=True).items():
+            setattr(coordinator, field, value)
+
+        session.commit()
+        session.refresh(coordinator)
+        return coordinator
+    except Exception as e:
+        session.rollback()
+        raise ValueError(f"Failed to update coordinator: {str(e)}")
+
+
+# Get User with Profile
+
+
+def get_user_with_profile(session: Session, user_id: int) -> User | None:
+    """
+    Get a user with their complete profile (eagerly loads related data).
+
+    This function loads the user and their type-specific profile
+    (volunteer, organisation, or coordinator) in a single query.
+
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+
+    Returns:
+        User object with profile loaded, or None if not found
+
+    Example:
+        >>> user = get_user_with_profile(db, 123)
+        >>> if user and user.user_type == UserType.VOLUNTEER:
+        >>>     print(user.volunteer.first_name)
     """
     user = session.query(User).filter(User.id == user_id).first()
     if not user:
         return None
 
-    if (
-        (user.user_type == UserType.VOLUNTEER and not isinstance(other_info, VolunteerInfo)) or
-        (user.user_type == UserType.ORGANISATION and not isinstance(other_info, OrganisationInfo)) or
-        (user.user_type == UserType.COORDINATOR and not isinstance(other_info, CoordinatorInfo))
-    ):
-        raise TypeError("Brak obowiązkowych informacji dla podanego typu użytkownika!")
+    # Eagerly load the type-specific profile
+    if user.user_type == UserType.VOLUNTEER:
+        _ = user.volunteer  # Triggers lazy loading
+    elif user.user_type == UserType.ORGANISATION:
+        _ = user.organisation  # Triggers lazy loading
+    elif user.user_type == UserType.COORDINATOR:
+        _ = user.coordinator  # Triggers lazy loading
 
+    return user
+
+
+# Combined Registration Operations
+
+
+def register_volunteer(
+    session: Session,
+    user_data: UserCreate,
+    volunteer_data: VolunteerCreate,
+    password_hash: str,
+    location_id: int | None = None,
+) -> tuple[User, Volunteer]:
+    """
+    Register a new volunteer (creates both User and Volunteer).
+
+    Args:
+        session: SQLAlchemy Session
+        user_data: User creation data
+        volunteer_data: Volunteer creation data
+        password_hash: Hashed password
+        location_id: Optional location ID
+
+    Returns:
+        Tuple of (User, Volunteer)
+
+    Raises:
+        ValueError: If user already exists or registration fails
+    """
     try:
-        for field, value in user_data.dict(exclude_unset=True).items():
-            setattr(user, field, value)
+        # Ensure user type is volunteer
+        user_data.user_type = UserType.VOLUNTEER
 
-        if user.user_type == UserType.VOLUNTEER:
-            volunteer = session.query(Volunteer).filter(Volunteer.user_id == user_id).first()
-            if volunteer:
-                for field, value in other_info.dict(exclude_unset=True).items():
-                    setattr(volunteer, field, value)
-        elif user.user_type == UserType.ORGANISATION:
-            organisation = session.query(Organisation).filter(Organisation.user_id == user_id).first()
-            if organisation:
-                for field, value in other_info.dict(exclude_unset=True).items():
-                    setattr(organisation, field, value)
-        elif user.user_type == UserType.COORDINATOR:
-            coordinator = session.query(Coordinator).filter(Coordinator.user_id == user_id).first()
-            if coordinator:
-                for field, value in other_info.dict(exclude_unset=True).items():
-                    setattr(coordinator, field, value)
+        # Create user
+        user = create_user(session, user_data, password_hash, location_id)
 
+        # Create volunteer profile
+        volunteer = create_volunteer(session, user, volunteer_data)
+
+        # Commit transaction
         session.commit()
         session.refresh(user)
-        return user
+        session.refresh(volunteer)
 
-    except Exception:
+        return user, volunteer
+    except Exception as e:
         session.rollback()
-        raise Exception("Błąd podczas aktualizacji danych użytkownika!")
+        raise ValueError(f"Failed to register volunteer: {str(e)}")
+
+
+def register_organisation(
+    session: Session,
+    user_data: UserCreate,
+    org_data: OrganisationCreate,
+    password_hash: str,
+    location_id: int | None = None,
+) -> tuple[User, Organisation]:
+    """
+    Register a new organisation (creates both User and Organisation).
+
+    Args:
+        session: SQLAlchemy Session
+        user_data: User creation data
+        org_data: Organisation creation data
+        password_hash: Hashed password
+        location_id: Optional location ID
+
+    Returns:
+        Tuple of (User, Organisation)
+
+    Raises:
+        ValueError: If user already exists or registration fails
+    """
+    try:
+        # Ensure user type is organisation
+        user_data.user_type = UserType.ORGANISATION
+
+        # Create user
+        user = create_user(session, user_data, password_hash, location_id)
+
+        # Create organisation profile
+        organisation = create_organisation(session, user, org_data)
+
+        # Commit transaction
+        session.commit()
+        session.refresh(user)
+        session.refresh(organisation)
+
+        return user, organisation
+    except Exception as e:
+        session.rollback()
+        raise ValueError(f"Failed to register organisation: {str(e)}")
+
+
+def register_coordinator(
+    session: Session,
+    user_data: UserCreate,
+    coord_data: CoordinatorCreate,
+    password_hash: str,
+    location_id: int | None = None,
+) -> tuple[User, Coordinator]:
+    """
+    Register a new coordinator (creates both User and Coordinator).
+
+    Args:
+        session: SQLAlchemy Session
+        user_data: User creation data
+        coord_data: Coordinator creation data
+        password_hash: Hashed password
+        location_id: Optional location ID
+
+    Returns:
+        Tuple of (User, Coordinator)
+
+    Raises:
+        ValueError: If user already exists or registration fails
+    """
+    try:
+        # Ensure user type is coordinator
+        user_data.user_type = UserType.COORDINATOR
+
+        # Create user
+        user = create_user(session, user_data, password_hash, location_id)
+
+        # Create coordinator profile
+        coordinator = create_coordinator(session, user, coord_data)
+
+        # Commit transaction
+        session.commit()
+        session.refresh(user)
+        session.refresh(coordinator)
+
+        return user, coordinator
+    except Exception as e:
+        session.rollback()
+        raise ValueError(f"Failed to register coordinator: {str(e)}")
 
 
 def delete_user(session: Session, user_id: int) -> bool:
     """
-    Removes user and related data from db.
+    Delete a user and all associated data.
 
-    :param session: SQLAlchemy Session
-    :param user_id: ID of user to delete
-    :return: True if removed, False if user doesn't exist
+    Args:
+        session: SQLAlchemy Session
+        user_id: The user's ID
+
+    Returns:
+        True if deleted, False if user not found
     """
-    user = session.query(User).filter(User.id == user_id).first()
+    user = get_user_by_id(session, user_id)
     if not user:
         return False
 
     try:
-        if user.user_type == UserType.VOLUNTEER:
-            session.query(Volunteer).filter(Volunteer.user_id == user_id).delete()
-        elif user.user_type == UserType.ORGANISATION:
-            session.query(Organisation).filter(Organisation.user_id == user_id).delete()
-        elif user.user_type == UserType.COORDINATOR:
-            session.query(Coordinator).filter(Coordinator.user_id == user_id).delete()
-
         session.delete(user)
         session.commit()
         return True
-
-    except Exception:
+    except Exception as e:
         session.rollback()
-        raise Exception("Błąd podczas usuwania użytkownika!")
-
-
-def get_user(session: Session, user_id: int) -> UserModel | None:
-    """
-    Gets User data.
-
-    :param session: SQLAlchemy Session
-    :param user_id: user ID
-    :return: User data or None if not found
-    """
-    user = session.query(User).filter(User.id == user_id).first()
-    if not user:
-        return None
-
-    user = UserModel(email=user.email,
-                     password_hash=user.password_hash,
-                     user_type=user.user_type,
-                     created_at=user.created_at,
-                     updated_at=user.updated_at)
-
-    return user
+        raise ValueError(f"Failed to delete user: {str(e)}")

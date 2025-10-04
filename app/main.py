@@ -6,20 +6,24 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
-from app.routes import health_check
-from app.routes import auth
-from app.routes import register
+from app.routes import auth, health_check, register, user
 from app.config import SERVER_ADDRESS
 from app.logs import setup_logging
 
 setup_logging()
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    title="HackYeah 2025 API",
+    description="API for volunteer management system",
+    version="1.0.0",
+)
 
 app.include_router(health_check.router)
 app.include_router(auth.router)
 app.include_router(register.router)
+app.include_router(user.router)
+
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
@@ -28,7 +32,6 @@ templates = Jinja2Templates(directory="app/templates")
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-
 
 
 if __name__ == "__main__":
