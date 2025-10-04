@@ -312,7 +312,11 @@ async def get_current_user_profile(auth_user: AuthUser, db: DBSession):
     summary="Get user by ID",
 )
 async def get_user(auth_user: AuthUser, db: DBSession):
-    """Get basic user information by ID."""
+    """
+    Get basic user information by ID.
+
+    Requires valid JWT token in Authorization header.
+    """
     user = get_user_by_id(db, auth_user.id)
     if not user:
         raise HTTPException(
@@ -334,6 +338,8 @@ async def get_user_profile(_: AuthUser, user_id: int, db: DBSession):
     - Volunteer: includes volunteer details
     - Organisation: includes organisation details
     - Coordinator: includes coordinator details
+
+    Requires valid JWT token in Authorization header.
     """
     user = get_user_with_profile(db, user_id)
     if not user:
@@ -381,6 +387,8 @@ async def update_volunteer_profile(
     Update volunteer profile information.
 
     Only provided fields will be updated (partial update).
+
+    Requires valid JWT token in Authorization header.
     """
     # Verify user exists and is a volunteer
     user = get_user_by_id(db, user_id)
@@ -424,6 +432,8 @@ async def update_organisation_profile(
     Update organisation profile information.
 
     Only provided fields will be updated (partial update).
+
+    Requires valid JWT token in Authorization header.
     """
     # Verify user exists and is an organisation
     user = get_user_by_id(db, user_id)
@@ -467,6 +477,8 @@ async def update_coordinator_profile(
     Update coordinator profile information.
 
     Only provided fields will be updated (partial update).
+
+    Requires valid JWT token in Authorization header.
     """
     # Verify user exists and is a coordinator
     user = get_user_by_id(db, user_id)
@@ -509,6 +521,8 @@ async def delete_user_account(_: AuthUser, user_id: int, db: DBSession):
 
     This will cascade delete the user's type-specific profile
     (volunteer, organisation, or coordinator).
+
+    Requires valid JWT token in Authorization header.
     """
     success = delete_user(db, user_id)
     if not success:
