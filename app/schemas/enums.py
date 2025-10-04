@@ -7,7 +7,7 @@ class UserType(StrEnum):
     COORDINATOR = "coordinator"
 
 
-class LocationType(Enum):
+class LocationType(StrEnum):
     VOLUNTEER = "volunteer"
     ORGANISATION = "organisation"
     EVENT = "event"
