@@ -3,8 +3,12 @@ name: Python API CI
 on:
   push:
     branches: [ main]
+    paths:
+      - 'backend/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'backend/**'
 
 jobs:
   test:
@@ -24,19 +28,22 @@ jobs:
       uses: astral-sh/setup-uv@v5
       with:
         enable-cache: true
-        cache-dependency-glob: "uv.lock"
+        cache-dependency-glob: "backend/uv.lock"
         python-version: ${{ matrix.python-version }}
 
     # uv sync cause further issues with mypy
     # the workaround is: uv pip install -e "."
     - name: Install dependencies 
+      working-directory: ./backend
       run: |
         uv sync --dev
     
     - name: Lint & format code with ruff
+      working-directory: ./backend
       run: |
         uv run ruff check app/ tests/
 
     - name: Run tests
+      working-directory: ./backend
       run: |
         uv run pytest tests/ -v
