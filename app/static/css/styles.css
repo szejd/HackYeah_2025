@@ -27,6 +27,7 @@ header {
     padding: 8px 12px;
     background-color: #0057B8;
     border-radius: 5px;
+    position: relative;
 }
 
 .hero {
@@ -51,13 +52,32 @@ header {
     text-align: center; /* wyśrodkowanie listy */
 }
 
+.hero {
+    position: relative;
+    background: url("https://static.prsa.pl/images/556185c1-4dc8-48a6-8050-bae9742b561e.jpg") center/cover no-repeat;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0; /* full size */
+    background: rgba(0, 0, 0, 0.5); /* dark overlay */
+}
+
+.hero h1, .hero p {
+    position: relative; /* so it stays above overlay */
+    color: white;
+}
+
 .events ul {
     list-style: none;
     padding: 0;
     /* Shift list slightly left by leaving a margin on the right side */
     margin: 0 33% 0 auto; /* top right bottom left */
     display: block; /* kontener listy jako blok */
-    width: 45%; /* zajmuje ~75% szerokości ekranu */
+    width: 45%; /* zajmuje ~45% szerokości ekranu */
     position: relative;
 }
 
@@ -69,7 +89,7 @@ header {
     position: relative; /* dla transform */
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     transition: transform 0.3s, box-shadow 0.3s;
-    width: 100%; /* element listy wypełnia 75% kontenera UL */
+    width: 100%; /* element listy wypełnia 100% kontenera UL */
     min-width: 200px;
     transform-origin: center; /* scale from center to avoid overflow */
 }
@@ -208,3 +228,4 @@ header {
 }
 .auth-footer a { color: #6c757d; text-decoration: none; }
 .auth-footer a:hover { text-decoration: underline; }
+.foo {background-color: #0057B8;}

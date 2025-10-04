@@ -31,6 +31,14 @@ templates = Jinja2Templates(directory="app/templates")
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/login", response_class=HTMLResponse)
+async def login_form(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request, "error": None})
+
+@app.get("/register", response_class=HTMLResponse)
+async def register_form(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request, "error": None})
+
 
 if __name__ == "__main__":
     uvicorn.run(
