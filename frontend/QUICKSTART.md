@@ -142,7 +142,7 @@ ifconfig | grep inet
 
 ## 📁 Project Structure
 
-```
+```bash
 frontend/
 ├── android/              # Android native code
 ├── src/

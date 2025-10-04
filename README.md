@@ -4,7 +4,7 @@ A full-stack application with FastAPI backend and React Native mobile frontend.
 
 ## Project Structure
 
-```
+```bash
 HackYeah_2025/
 ├── backend/          # FastAPI backend
 │   ├── app/         # Application code
@@ -113,11 +113,11 @@ HackYeah_2025/
 
 ## Environment Variables
 
-### Backend
+### Backend env
 
 Configure in `backend/.env` (if needed)
 
-### Frontend
+### Frontend env
 
 Configure in `frontend/.env`:
 
