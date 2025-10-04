@@ -41,7 +41,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     user_type: Mapped[UserType] = mapped_column(Enum, nullable=False)
-    location_id: Mapped[int] = mapped_column(ForeignKey("location.id"))
+    location_id: Mapped[int | None] = mapped_column(ForeignKey("location.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=get_poland_time_now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=get_poland_time_now(), onupdate=get_poland_time_now()
@@ -137,6 +137,7 @@ class Location(Base):
 
     users: Mapped[list["User"]] = relationship("User", back_populates="location")
     events: Mapped[list["Event"]] = relationship("Event", back_populates="location")
+
 
 
 class Event(Base):
