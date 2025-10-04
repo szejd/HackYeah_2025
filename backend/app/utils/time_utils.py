@@ -24,3 +24,8 @@ def get_time_in_timezone(timezone_name: str) -> str:
         return now.strftime(DATETIME_FORMAT)
     except ZoneInfoNotFoundError:
         return INVALID_TIMEZONE_MESSAGE
+
+
+def get_poland_time_now() -> datetime:
+    tz = ZoneInfo("Europe/Warsaw")
+    return datetime.now(tz)
