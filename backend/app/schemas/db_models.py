@@ -52,9 +52,9 @@ class User(Base):
     domains: Mapped[list["Domain"]] = relationship("Domain", secondary=user_domain_association, back_populates="users")
     time_logs: Mapped[list["TimeLog"]] = relationship("TimeLog", back_populates="user")
 
-    volunteer = relationship("Volunteer", uselist=False, back_populates="user", cascade="delete-orphan")
-    organisation = relationship("Organisation", uselist=False, back_populates="user", cascade="delete-orphan")
-    coordinator = relationship("Coordinator", uselist=False, back_populates="user", cascade="delete-orphan")
+    volunteer = relationship("Volunteer", uselist=False, back_populates="user", cascade="delete, delete-orphan")
+    organisation = relationship("Organisation", uselist=False, back_populates="user", cascade="delete, delete-orphan")
+    coordinator = relationship("Coordinator", uselist=False, back_populates="user", cascade="delete, delete-orphan")
 
 
 class Volunteer(Base):
@@ -90,6 +90,7 @@ class Organisation(Base):
 
     user = relationship("User", back_populates="organisation")
     domains: Mapped[list["Domain"]] = relationship("Domain", back_populates="organisation")
+    events: Mapped[list["Event"]] = relationship("Event", back_populates="organisation")
 
 
 class Coordinator(Base):
@@ -148,13 +149,13 @@ class Event(Base):
     signup_start: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     signup_end: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     location_id: Mapped[int] = mapped_column(ForeignKey("location.id"))
-    organisation_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    organisation_id: Mapped[int] = mapped_column(ForeignKey("organisation.id"))
 
     location: Mapped["Location"] = relationship("Location", back_populates="events")
-    organisation: Mapped["User"] = relationship("User", foreign_keys=[organisation_id])
+    organisation: Mapped["Organisation"] = relationship("Organisation", back_populates="events")
     tasks: Mapped[list["Task"]] = relationship("Task", back_populates="event")
     registrations: Mapped[list["Registration"]] = relationship("Registration", back_populates="event")
-    certificates: Mapped[list["Certificate"]] = relationship("TimeLog", back_populates="ce")
+    certificates: Mapped[list["Certificate"]] = relationship("TimeLog", back_populates="event")
 
 
 class Task(Base):
@@ -163,7 +164,7 @@ class Task(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text)
     estimation_minutes: Mapped[int] = mapped_column(Integer)
-    organisation_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    organisation_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     event_id: Mapped[int | None] = mapped_column(ForeignKey("event.id"))
 
     event: Mapped[Event | None] = relationship("Event", back_populates="tasks")
@@ -237,6 +238,7 @@ class Certificate(Base):
 
     volunteer: Mapped["Volunteer"] = relationship("Volunteer", back_populates="certificates")
     template: Mapped["CertificateTemplate"] = relationship("CertificateTemplate", back_populates="certificates")
+    event: Mapped["Event"] = relationship("Event", back_populates="certificates")
 
 
 class CertificateTemplate(Base):
@@ -252,8 +254,8 @@ class CertificateTemplate(Base):
 class TimeLog(Base):
     __tablename__ = "timelog"
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
-    task_id: Mapped[int | None] = mapped_column(ForeignKey("task.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
     minutes: Mapped[int] = mapped_column(Integer)
     logged_at: Mapped[datetime] = mapped_column(DateTime, default=get_poland_time_now())
 

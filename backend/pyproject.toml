@@ -12,6 +12,7 @@ dependencies = [
     "sqlalchemy",
     "pydantic",
     "pydantic-settings",
+    "folium",
 ]
 
 [dependency-groups]
