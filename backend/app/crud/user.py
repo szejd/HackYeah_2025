@@ -14,6 +14,7 @@ class UserModel(BaseModel):
     email: str
     password_hash: str
     user_type: UserType
+    location_id: int | None = None
     created_at: date | None = None
     updated_at: date | None = None
     location: Location | None = None
