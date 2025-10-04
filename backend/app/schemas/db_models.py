@@ -4,7 +4,7 @@ from backend.app.utils.time_utils import get_poland_time_now
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 from sqlalchemy.orm import relationship
 import datetime
-from sqlalchemy import Integer, String, Enum, DateTime, Text, ForeignKey, Boolean, Date, Table
+from sqlalchemy import Integer, String, Enum, DateTime, Text, ForeignKey, Boolean, Date, Table, Column
 
 
 class Base(DeclarativeBase):
@@ -15,22 +15,22 @@ class Base(DeclarativeBase):
 user_chat_association = Table(
     "user_chat_association",
     Base.metadata,
-    mapped_column("user_id", Integer, ForeignKey("users.id")),
-    mapped_column("chat_id", Integer, ForeignKey("chat.id")),
+    Column("user_id", Integer, ForeignKey("users.id")),
+    Column("chat_id", Integer, ForeignKey("chat.id")),
 )
 
 user_domain_association = Table(
     "user_domain_association",
     Base.metadata,
-    mapped_column("user_id", Integer, ForeignKey("users.id")),
-    mapped_column("domain_id", Integer, ForeignKey("domain.id")),
+    Column("user_id", Integer, ForeignKey("users.id")),
+    Column("domain_id", Integer, ForeignKey("domain.id")),
 )
 
 volunteer_skill_association = Table(
     "volunteer_skill_association",
     Base.metadata,
-    mapped_column("volunteer_id", Integer, ForeignKey("volunteer.id")),
-    mapped_column("skill_id", Integer, ForeignKey("skill.id")),
+    Column("volunteer_id", Integer, ForeignKey("volunteer.id")),
+    Column("skill_id", Integer, ForeignKey("skill.id")),
 )
 
 
