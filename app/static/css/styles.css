@@ -1,0 +1,210 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: "Lato", Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* prevent horizontal stretching */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0057B8;
+    color: white;
+    padding: 10px 20px;
+}
+
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.login-btn {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    background-color: #0057B8;
+    border-radius: 5px;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #f5f7fb;
+}
+
+.events {
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden; /* contain hover scaling within section */
+}
+
+.events h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.events-container {
+    position: relative;
+    text-align: center; /* wyśrodkowanie listy */
+}
+
+.events ul {
+    list-style: none;
+    padding: 0;
+    /* Shift list slightly left by leaving a margin on the right side */
+    margin: 0 33% 0 auto; /* top right bottom left */
+    display: block; /* kontener listy jako blok */
+    width: 45%; /* zajmuje ~75% szerokości ekranu */
+    position: relative;
+}
+
+.events li {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 12px; /* zmniejszony odstęp między elementami listy */
+    position: relative; /* dla transform */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    width: 100%; /* element listy wypełnia 75% kontenera UL */
+    min-width: 200px;
+    transform-origin: center; /* scale from center to avoid overflow */
+}
+
+/* efekt hover */
+.events li:hover {
+    transform: translate(var(--x-offset, 0%), var(--y-offset, 0%)) scale(1.02);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+
+
+/* Responsywność: na małych ekranach zajmij więcej szerokości */
+@media (max-width: 768px) {
+    .events ul {
+        width: 92%;
+        margin: 0 3% 0 auto; /* keep some right margin on small screens */
+    }
+}
+
+.auth-body {
+    background-color: #f5f7fb;
+    color: #212529;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 340px;
+    margin: 24px auto;
+    padding: 16px;
+    text-align: center;
+}
+
+.auth-logo {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: #0057B8;
+    margin-bottom: 16px;
+    text-decoration: none;
+}
+
+.flash {
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 8px 0 16px;
+    font-size: 14px;
+    text-align: left;
+}
+.flash-error {
+    background-color: #fdecea;
+    border-color: #f5c2c7;
+    color: #842029;
+}
+
+.auth-card {
+    background-color: #ffffff;
+    border: 1px solid #e1e6f0;
+    border-radius: 6px;
+    padding: 24px;
+    text-align: left;
+}
+
+.auth-card h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+}
+
+.form-group { margin-bottom: 16px; }
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.label-row .link-muted {
+    font-size: 12px;
+    color: #6c757d;
+    text-decoration: none;
+}
+.label-row .link-muted:hover { text-decoration: underline; }
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    outline: none;
+    background-color: #ffffff;
+    color: #212529;
+}
+.form-control:focus {
+    border-color: #0057B8;
+    box-shadow: 0 0 0 3px rgba(0,87,184,0.25);
+}
+
+.btn {
+    width: 100%;
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-primary {
+    background-color: #0057B8; /* Kraków blue */
+    border-color: rgba(0,0,0,0.05);
+    color: #fff;
+}
+.btn-primary:hover { background-color: #004a99; }
+
+.auth-secondary {
+    margin-top: 16px;
+    background-color: #ffffff;
+    border: 1px solid #e1e6f0;
+    border-radius: 6px;
+    padding: 16px;
+}
+.auth-secondary a { color: #0057B8; text-decoration: none; }
+.auth-secondary a:hover { text-decoration: underline; }
+
+.auth-footer {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 12px;
+    color: #6c757d;
+}
+.auth-footer a { color: #6c757d; text-decoration: none; }
+.auth-footer a:hover { text-decoration: underline; }

@@ -1,0 +1,28 @@
+﻿{% extends "base.html" %}
+{% block title %}Strona główna · KCW{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Twoja energia — czyjeś uśmiechy</h1>
+    <p>Znajdź możliwości wolontariatu w swojej okolicy i dołącz do nadchodzących wydarzeń.</p>
+    <div style="margin-top:16px;">
+        <a href="/register" class="login-btn">Zostań wolontariuszem</a>
+    </div>
+</section>
+
+<section class="events">
+    <h2>Nadchodzące wydarzenia</h2>
+    <div class="events-container">
+        <ul>
+            {% for event in events %}
+            <li>
+                <h3>{{ event.title or event.name }}</h3>
+                <p>{{ event.date or event.start_date }} – {{ event.location or event.location_name }}</p>
+            </li>
+            {% else %}
+            <li>Brak nadchodzących wydarzeń. Odwiedź nas ponownie już wkrótce!</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock %}
