@@ -21,12 +21,13 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     user_type: Mapped[UserType] = mapped_column(Enum, nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.datetime.now(), onupdate=datetime.datetime.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.datetime.now(),
+                                                 onupdate=datetime.datetime.now())
 
     # Relationships to subclasses
-    volunteer = relationship("Volunteer", uselist=False, back_populates="user")
-    organisation = relationship("Organisation", uselist=False, back_populates="user")
-    coordinator = relationship("Coordinator", uselist=False, back_populates="user")
+    volunteer = relationship("Volunteer", uselist=False, back_populates="user", cascade="delete-orphan")
+    organisation = relationship("Organisation", uselist=False, back_populates="user", cascade="delete-orphan")
+    coordinator = relationship("Coordinator", uselist=False, back_populates="user", cascade="delete-orphan")
 
 
 class Volunteer(Base):
