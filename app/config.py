@@ -18,6 +18,11 @@ class EnvConfig(BaseSettings):
     DB_PASSWORD: str = ""
     APP_LOG_LEVEL: int = logging.INFO  # Default log level as int
 
+    # JWT Settings
+    JWT_SECRET_KEY: str = ""  # Change this in production!
+    JWT_ALGORITHM: str = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
     @field_validator("APP_LOG_LEVEL", mode="before")
     @classmethod
     def parse_log_level(cls, value):
@@ -73,3 +78,6 @@ DB_NAME = env_config.DB_NAME
 DB_USER = env_config.DB_USER
 DB_PASSWORD = env_config.DB_PASSWORD
 APP_LOG_LEVEL = env_config.APP_LOG_LEVEL
+JWT_SECRET_KEY = env_config.JWT_SECRET_KEY
+JWT_ALGORITHM = env_config.JWT_ALGORITHM
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES = env_config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES
