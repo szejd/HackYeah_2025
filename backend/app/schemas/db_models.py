@@ -78,4 +78,4 @@ class Skill(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     skill_name: Mapped[str] = mapped_column(Text)
 
-    volunteer = relationship("Volunteer", uselist=False, back_populates="skills")
+    volunteer = relationship("Volunteer", back_populates="skills")
