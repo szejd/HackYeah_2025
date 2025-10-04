@@ -21,7 +21,7 @@ def add_location(session: Session, location_data: LocationData) -> int:
     new_location = Location(
         name=location_data.name,
         latitude=location_data.latitude,
-        longitude=location_data.longitude
+        longitude=location_data.longitude,
     )
     try:
         session.add(new_location)
@@ -34,6 +34,6 @@ def add_location(session: Session, location_data: LocationData) -> int:
 
 
 def get_location(session: Session, location_id: int) -> LocationData:
-    db_location = session.get_one(Location, location_id)
+    db_location: Location = session.get_one(Location, location_id)
     return LocationData(name=db_location.name, latitude=db_location.latitude, longitude=db_location.longitude)
 
