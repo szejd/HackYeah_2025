@@ -6,6 +6,8 @@ import uvicorn
 
 from app.routes import health_check
 from app.services.world_time import get_world_times
+from settings import SERVER_ADDRESS
+from db_connection import SessionLocal
 
 app = FastAPI()
 
@@ -24,7 +26,7 @@ async def home(request: Request):
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",  # Module path to FastAPI instance
-        host="0.0.0.0",  # or "0.0.0.0" to be reachable externally
+        host=SERVER_ADDRESS,  # or "0.0.0.0" to be reachable externally
         port=8000,
         reload=True,  # Auto-reload on code changes (dev only)
     )
@@ -33,3 +35,13 @@ if __name__ == "__main__":
 @app.get("/greet")
 def greet(name: str = "World"):
     return {"message": f"Hello, {name}!"}
+
+
+# Usage example: opening a session
+if __name__ == "__main__":
+    # Create a new session
+    session = SessionLocal()
+    try:
+        pass
+    finally:
+        session.close()
