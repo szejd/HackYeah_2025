@@ -10,6 +10,8 @@ dependencies = [
     "pytz>=2025.2",
     "tzdata>=2025.2",
     "sqlalchemy",
+    "pydantic",
+    "pydantic-settings",
 ]
 
 [dependency-groups]
