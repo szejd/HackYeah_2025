@@ -40,8 +40,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    user_type: Mapped[UserType] = mapped_column(Enum, nullable=False)
-    location_id: Mapped[int] = mapped_column(ForeignKey("location.id"))
+    user_type: Mapped[UserType] = mapped_column(Enum(UserType, name="user_type"), nullable=False)
+    location_id: Mapped[int | None] = mapped_column(ForeignKey("location.id"), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=get_poland_time_now())
     updated_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=get_poland_time_now(), onupdate=get_poland_time_now()
@@ -71,7 +71,6 @@ class Volunteer(Base):
     skills: Mapped[list["Skill"]] = relationship(
         "Skill", secondary=volunteer_skill_association, back_populates="volunteers"
     )
-    domains: Mapped[list["Domain"]] = relationship("Domain", back_populates="volunteer")
     reviews: Mapped[list["Review"]] = relationship("Review", back_populates="volunteer")
     certificates: Mapped[list["Certificate"]] = relationship("Certificate", back_populates="volunteer")
 
@@ -89,7 +88,6 @@ class Organisation(Base):
     verified: Mapped[bool] = mapped_column(Boolean)
 
     user = relationship("User", back_populates="organisation")
-    domains: Mapped[list["Domain"]] = relationship("Domain", back_populates="organisation")
 
 
 class Coordinator(Base):
@@ -154,7 +152,6 @@ class Event(Base):
     organisation: Mapped["User"] = relationship("User", foreign_keys=[organisation_id])
     tasks: Mapped[list["Task"]] = relationship("Task", back_populates="event")
     registrations: Mapped[list["Registration"]] = relationship("Registration", back_populates="event")
-    certificates: Mapped[list["Certificate"]] = relationship("TimeLog", back_populates="ce")
 
 
 class Task(Base):
@@ -167,7 +164,7 @@ class Task(Base):
     event_id: Mapped[int | None] = mapped_column(ForeignKey("event.id"))
 
     event: Mapped[Event | None] = relationship("Event", back_populates="tasks")
-    organisation: Mapped[Organisation | None] = relationship("Organisation", back_populates="tasks")
+    organisation: Mapped["User | None"] = relationship("User", foreign_keys=[organisation_id])
     time_logs: Mapped[list["TimeLog"]] = relationship("TimeLog", back_populates="task")
     requirements: Mapped[list["Requirement"]] = relationship("Requirement", back_populates="task")
 
@@ -246,7 +243,6 @@ class CertificateTemplate(Base):
     content: Mapped[str] = mapped_column(Text)
 
     certificates: Mapped[list["Certificate"]] = relationship("Certificate", back_populates="template")
-    event: Mapped["Event"] = relationship("Event", back_populates="time_logs")
 
 
 class TimeLog(Base):
