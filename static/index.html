@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackYeah 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: center;
+            color: #666;
+        }
+
+        .api-info {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+
+        .api-info h2 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .endpoint {
+            background: white;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+            border-radius: 3px;
+        }
+
+        .endpoint code {
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🚀 HackYeah 2025</h1>
+        <p>Welcome to the HackYeah 2025 API</p>
+
+        <div class="api-info">
+            <h2>Available Endpoints</h2>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <code>/health</code>
+                <p>Check API health status</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <code>/docs</code>
+                <p>Interactive API documentation (Swagger UI)</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <code>/redoc</code>
+                <p>Alternative API documentation (ReDoc)</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
