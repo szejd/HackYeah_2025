@@ -3,19 +3,19 @@
  */
 
 export interface HealthCheckResponse {
-  status: string;
-  timestamp?: string;
+    status: string;
+    timestamp?: string;
 }
 
 // Add more types as your app grows
 export interface User {
-  id: string;
-  name: string;
-  email: string;
+    id: string;
+    name: string;
+    email: string;
 }
 
 export interface ApiError {
-  message: string;
-  code?: string;
-  details?: any;
+    message: string;
+    code?: string;
+    details?: any;
 }

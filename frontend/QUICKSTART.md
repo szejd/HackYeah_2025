@@ -5,6 +5,7 @@
 Your React Native Android app is now ready! Here's what was configured:
 
 ### 1. Project Structure
+
 - ✅ React Native 0.81.4 initialized
 - ✅ TypeScript support enabled
 - ✅ Environment variable support configured
@@ -12,18 +13,21 @@ Your React Native Android app is now ready! Here's what was configured:
 - ✅ Type definitions for TypeScript
 
 ### 2. Configuration Files
+
 - ✅ `.env` - Environment variables (API_BASE_URL configured for Android emulator)
 - ✅ `.env.example` - Template for environment variables
 - ✅ `babel.config.js` - Configured with react-native-dotenv
 - ✅ `.gitignore` - Updated to exclude .env files
 
 ### 3. Source Code
+
 - ✅ `src/services/api.ts` - API service for FastAPI backend
 - ✅ `src/types/index.ts` - Common type definitions
 - ✅ `src/types/env.d.ts` - Environment variable types
 - ✅ `App.example.tsx` - Example app with backend health check
 
 ### 4. Dependencies Installed
+
 - ✅ All React Native dependencies
 - ✅ react-native-dotenv for environment variables
 
@@ -39,6 +43,7 @@ cp App.example.tsx App.tsx
 ```
 
 This example app will:
+
 - Show a health check connection to your FastAPI backend
 - Display helpful debugging information
 - Demonstrate how to use the API service
@@ -55,12 +60,14 @@ uv run uvicorn app.main:app --reload
 ### 3. Start the React Native App
 
 Terminal 1 - Start Metro:
+
 ```bash
 cd /home/maokx/PythonProjects/HackYeah_2025/frontend
 npm start
 ```
 
 Terminal 2 - Run on Android:
+
 ```bash
 cd /home/maokx/PythonProjects/HackYeah_2025/frontend
 npm run android
@@ -71,7 +78,7 @@ npm run android
 If you don't have an Android emulator yet:
 
 1. **Install Android Studio**
-   - Download from https://developer.android.com/studio
+   - Download from <https://developer.android.com/studio>
 
 2. **Open Android Studio**
    - Go to: Tools → Device Manager
@@ -81,8 +88,9 @@ If you don't have an Android emulator yet:
    - Click "Finish"
 
 3. **Set Environment Variables**
-   
+
    Add to `~/.bashrc` or `~/.zshrc`:
+
    ```bash
    export ANDROID_HOME=$HOME/Android/Sdk
    export PATH=$PATH:$ANDROID_HOME/emulator
@@ -90,11 +98,13 @@ If you don't have an Android emulator yet:
    ```
 
    Then reload:
+
    ```bash
    source ~/.bashrc  # or source ~/.zshrc
    ```
 
 4. **Start the Emulator**
+
    ```bash
    # List available devices
    emulator -list-avds
@@ -116,11 +126,13 @@ NODE_ENV=development
 ```
 
 **Important Network Notes:**
+
 - **Android Emulator**: Use `http://10.0.2.2:8000` (already configured)
 - **Physical Android Device**: Use your computer's local IP (e.g., `http://192.168.1.100:8000`)
 - **Production**: Update to your production API URL
 
 To find your local IP:
+
 ```bash
 # Linux/Mac
 ip addr show | grep inet
@@ -169,16 +181,19 @@ const result = await apiService.post('/your-endpoint', {
 ## 📝 Development Workflow
 
 1. **Start Backend** (Terminal 1):
+
    ```bash
    cd backend && uv run uvicorn app.main:app --reload
    ```
 
 2. **Start Metro** (Terminal 2):
+
    ```bash
    cd frontend && npm start
    ```
 
 3. **Run Android** (Terminal 3):
+
    ```bash
    cd frontend && npm run android
    ```
@@ -224,7 +239,7 @@ npm install
 - [TypeScript Docs](https://www.typescriptlang.org/docs/)
 - [Android Studio Guide](https://developer.android.com/studio/intro)
 
-## ✨ You're Ready!
+## ✨ You're Ready
 
 Your React Native app is fully configured and ready for development. The example app demonstrates backend connectivity and provides a starting point for your HackYeah 2025 project!
 

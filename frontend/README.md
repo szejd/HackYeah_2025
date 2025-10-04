@@ -31,6 +31,7 @@ cp .env.example .env
 ```
 
 Update `.env` with your configuration:
+
 - `API_BASE_URL` - Backend API URL
   - For Android Emulator: `http://10.0.2.2:8000` (default)
   - For Physical Device: `http://<your-local-ip>:8000`
@@ -49,6 +50,7 @@ Update `.env` with your configuration:
 
 3. **Set Environment Variables**
    Add to your `~/.bashrc` or `~/.zshrc`:
+
    ```bash
    export ANDROID_HOME=$HOME/Android/Sdk
    export PATH=$PATH:$ANDROID_HOME/emulator
@@ -76,7 +78,6 @@ npm start
 yarn start
 ```
 
-
 ## Step 2: Build and run your app
 
 With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
@@ -92,6 +93,7 @@ yarn android
 ```
 
 Make sure:
+
 - You have an Android emulator running, OR
 - An Android device connected via USB with USB debugging enabled
 
@@ -154,27 +156,35 @@ If you're having issues getting the above steps to work, see the [Troubleshootin
 ## Common Issues
 
 ### Metro Bundler Issues
+
 If you encounter caching issues:
+
 ```bash
 npm start -- --reset-cache
 ```
 
 ### Build Errors
+
 Clean the Android build:
+
 ```bash
 cd android && ./gradlew clean
 cd .. && npm run android
 ```
 
 ### Package Installation Issues
+
 Remove and reinstall dependencies:
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install
 ```
 
 ### Android Emulator Connection
+
 If the app can't connect to the backend:
+
 1. Make sure your backend is running at `http://localhost:8000`
 2. For emulator, use `http://10.0.2.2:8000` in `.env`
 3. For physical device, use your computer's local IP (e.g., `http://192.168.1.100:8000`)
@@ -190,6 +200,7 @@ uv run uvicorn app.main:app --reload
 ```
 
 The backend will be available at:
+
 - API: `http://localhost:8000`
 - Docs: `http://localhost:8000/docs`
 - Health: `http://localhost:8000/health`
