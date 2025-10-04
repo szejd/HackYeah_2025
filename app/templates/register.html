@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zaloguj się · KCW</title>
+    <title>Utwórz konto · KCW</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
 <body class="auth-body">
-<main class="auth-container" aria-labelledby="auth-title">
+<main class="auth-container" aria-labelledby="register-title">
     <a href="/" class="auth-logo" aria-label="Strona główna">
-        <!-- GitHub-like octocat mark (simplified SVG) -->
         <svg height="48" viewBox="0 0 16 16" width="48" aria-hidden="true" focusable="false">
             <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 
             0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 
@@ -25,25 +24,38 @@
     {% endif %}
 
     <section class="auth-card">
-        <h1 id="auth-title">Zaloguj się do KCW</h1>
-        <form method="post" action="/login" class="auth-form">
+        <h1 id="register-title">Utwórz konto wolontariusza</h1>
+        <form method="post" action="/register" class="auth-form">
             <div class="form-group">
                 <label for="email">Adres email</label>
-                <input type="email" id="email" name="email" class="form-control" value="{{ email or '' }}" required autocomplete="username">
+                <input type="email" id="email" name="email" class="form-control" value="{{ email or '' }}" required autocomplete="email">
             </div>
             <div class="form-group">
-                <div class="label-row">
-                    <label for="password">Hasło</label>
-                    <a class="link-muted" href="#">Nie pamiętasz hasła?</a>
-                </div>
-                <input type="password" id="password" name="password" class="form-control" required autocomplete="current-password">
+                <label for="password">Hasło</label>
+                <input type="password" id="password" name="password" class="form-control" required autocomplete="new-password">
             </div>
-            <button type="submit" class="btn btn-primary">Zaloguj się</button>
+            <div class="form-group">
+                <label for="first_name">Imię</label>
+                <input type="text" id="first_name" name="first_name" class="form-control" value="{{ first_name or '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Nazwisko</label>
+                <input type="text" id="last_name" name="last_name" class="form-control" value="{{ last_name or '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="phone_number">Numer telefonu</label>
+                <input type="tel" id="phone_number" name="phone_number" class="form-control" value="{{ phone_number or '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="birth_date">Data urodzenia</label>
+                <input type="date" id="birth_date" name="birth_date" class="form-control" value="{{ birth_date or '' }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Utwórz konto</button>
         </form>
     </section>
 
     <section class="auth-secondary">
-        <p>Nowy w KCW? <a href="/register">Utwórz konto</a>.</p>
+        <p>Masz już konto? <a href="/login">Zaloguj się</a>.</p>
     </section>
 
     <footer class="auth-footer">

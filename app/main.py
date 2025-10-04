@@ -8,6 +8,7 @@ import uvicorn
 
 from app.routes import health_check
 from app.routes import auth
+from app.routes import register
 from app.config import SERVER_ADDRESS
 from app.logs import setup_logging
 
@@ -18,6 +19,7 @@ app = FastAPI()
 
 app.include_router(health_check.router)
 app.include_router(auth.router)
+app.include_router(register.router)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")

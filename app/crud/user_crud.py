@@ -1,11 +1,8 @@
-from typing import TYPE_CHECKING
-
 from pydantic import BaseModel
 from datetime import date
 from app.schemas.db_models import User, Volunteer, Organisation, Coordinator
 from app.schemas.enums import UserType
-if TYPE_CHECKING:
-    from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session
 
 class UserInfo(BaseModel):
     email: str
