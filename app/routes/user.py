@@ -50,7 +50,6 @@ from app.utils.auth import (
     hash_password,
     verify_password,
     create_access_token,
-    get_current_user,
     get_current_active_user,
 )
 from app.schemas.db_models import User
@@ -59,7 +58,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 # Dependency for database session
 DBSession = Annotated[Session, Depends(get_db)]
-CurrentUser = Annotated[User, Depends(get_current_active_user)]
+AuthUser = Annotated[User, Depends(get_current_active_user)]
 
 
 # ==================== Registration Endpoints ====================
@@ -255,7 +254,7 @@ async def login(credentials: UserLogin, db: DBSession):
     response_model=UserResponse,
     summary="Get current authenticated user",
 )
-async def get_current_user_info(current_user: CurrentUser):
+async def get_current_user_info(current_user: AuthUser):
     """
     Get information about the currently authenticated user.
 
@@ -268,14 +267,14 @@ async def get_current_user_info(current_user: CurrentUser):
     "/me/profile",
     summary="Get current user's complete profile",
 )
-async def get_current_user_profile(current_user: CurrentUser, db: DBSession):
+async def get_current_user_profile(auth_user: AuthUser, db: DBSession):
     """
     Get complete profile for the currently authenticated user.
 
     Requires valid JWT token in Authorization header.
     Returns different profile structures based on user type.
     """
-    user = get_user_with_profile(db, current_user.id)
+    user = get_user_with_profile(db, auth_user.id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -312,9 +311,9 @@ async def get_current_user_profile(current_user: CurrentUser, db: DBSession):
     response_model=UserResponse,
     summary="Get user by ID",
 )
-async def get_user(user_id: int, db: DBSession):
+async def get_user(auth_user: AuthUser, db: DBSession):
     """Get basic user information by ID."""
-    user = get_user_by_id(db, user_id)
+    user = get_user_by_id(db, auth_user.id)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -327,7 +326,7 @@ async def get_user(user_id: int, db: DBSession):
     "/{user_id}/profile",
     summary="Get user profile",
 )
-async def get_user_profile(user_id: int, db: DBSession):
+async def get_user_profile(_: AuthUser, user_id: int, db: DBSession):
     """
     Get complete user profile including type-specific information.
 
@@ -373,6 +372,7 @@ async def get_user_profile(user_id: int, db: DBSession):
     summary="Update volunteer profile",
 )
 async def update_volunteer_profile(
+    _: AuthUser,
     user_id: int,
     volunteer_data: VolunteerUpdate,
     db: DBSession,
@@ -415,6 +415,7 @@ async def update_volunteer_profile(
     summary="Update organisation profile",
 )
 async def update_organisation_profile(
+    _: AuthUser,
     user_id: int,
     org_data: OrganisationUpdate,
     db: DBSession,
@@ -457,6 +458,7 @@ async def update_organisation_profile(
     summary="Update coordinator profile",
 )
 async def update_coordinator_profile(
+    _: AuthUser,
     user_id: int,
     coord_data: CoordinatorUpdate,
     db: DBSession,
@@ -501,7 +503,7 @@ async def update_coordinator_profile(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete user",
 )
-async def delete_user_account(user_id: int, db: DBSession):
+async def delete_user_account(_: AuthUser, user_id: int, db: DBSession):
     """
     Delete a user account and all associated data.
 
