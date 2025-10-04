@@ -1,44 +1,29 @@
-﻿<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>Krakowskie Centrum Wolontariatu</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
-</head>
-<body>
-    <header>
-        <div class="logo">Krakowskie Centrum Wolontariatu</div>
-        <nav>
-            <a href="/login" class="login-btn">Login</a>
-        </nav>
-    </header>
+﻿{% extends "base.html" %}
+{% block title %}Strona główna · KCW{% endblock %}
 
-    <main>
-        <section class="hero">
-            <h1>Twoja energia - czyjeś uśmiechy</h1>
-            <p>Znajdź możliwości wolontariatu w swojej okolicy i dołącz do nadchodzących wydarzeń.</p>
-        </section>
-        <section class="events">
+{% block content %}
+<section class="hero">
+    <h1>Twoja energia — czyjeś uśmiechy</h1>
+    <p>Znajdź możliwości wolontariatu w swojej okolicy i dołącz do nadchodzących wydarzeń.</p>
+    <div style="margin-top:16px;">
+        <a href="/register" class="login-btn">Zostań wolontariuszem</a>
+        <a href="/login" style="margin-left:12px;">Mam już konto</a>
+    </div>
+</section>
+
+<section class="events">
     <h2>Nadchodzące wydarzenia</h2>
     <div class="events-container">
         <ul>
             {% for event in events %}
-                <li>
-                    <h3>{{ event.title }}</h3>
-                    <p>{{ event.date }} – {{ event.location }}</p>
-                </li>
+            <li>
+                <h3>{{ event.title or event.name }}</h3>
+                <p>{{ event.date or event.start_date }} – {{ event.location or event.location_name }}</p>
+            </li>
             {% else %}
-                <li>Brak nadchodzących wydarzeń. Odwiedź nas ponownie już wkrótce!</li>
+            <li>Brak nadchodzących wydarzeń. Odwiedź nas ponownie już wkrótce!</li>
             {% endfor %}
         </ul>
     </div>
 </section>
-    </main>
-
-    <footer>
-        <p>© 2025 Krakowskie Centrum Wolontariatu. Wszelkie prawa zastrzeżone.</p>
-    </footer>
-
-    <script src="{{ url_for('static', path='js/scripts.js') }}"></script>
-</body>
-</html>
+{% endblock %}

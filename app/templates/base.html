@@ -1,26 +1,33 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}My FastAPI App{% endblock %}</title>
+    <title>{% block title %}Krakowskie Centrum Wolontariatu{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header>
-        <h1>Welcome!</h1>
-        <nav>
-            <a href="{{ url_for('home') }}">Home</a>
-        </nav>
-    </header>
+<header>
+    <div class="logo"><a href="{{ url_for('home') }}" style="color:inherit;text-decoration:none;">Krakowskie Centrum Wolontariatu</a></div>
+    <nav>
+        <a href="{{ url_for('home') }}">Strona główna</a>
+        <a href="#">Wydarzenia</a>
+        <a href="#">O nas</a>
+        <a href="/login" class="login-btn" style="margin-left:12px;">Zaloguj się</a>
+        <a href="/register" style="color:#fff;margin-left:8px;">Zarejestruj</a>
+    </nav>
+</header>
 
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+<main>
+    {% block content %}{% endblock %}
+</main>
 
-    <footer>
-        <p>ŁapkiDevs &copy; {{ 2025 }}</p>
-    </footer>
+<footer>
+    <p>© {{ 2025 }} Krakowskie Centrum Wolontariatu · <a href="#" style="color:inherit;">Prywatność</a> · <a href="#" style="color:inherit;">Warunki</a> · <a href="#" style="color:inherit;">Kontakt</a></p>
+</footer>
+
+<script src="{{ url_for('static', path='js/scripts.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
 </body>
 </html>
