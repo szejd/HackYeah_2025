@@ -38,3 +38,18 @@ if __name__ == "__main__":
         port=8000,
         reload=True,  # Auto-reload on code changes (dev only)
     )
+
+
+@app.get("/greet")
+def greet(name: str = "World"):
+    return {"message": f"Hello, {name}!"}
+
+
+# Usage example: opening a session
+if __name__ == "__main__":
+    # Create a new session
+    session = SessionLocal()
+    try:
+        pass
+    finally:
+        session.close()

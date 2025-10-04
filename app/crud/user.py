@@ -2,14 +2,28 @@ from pydantic import BaseModel
 from datetime import date
 from app.schemas.db_models import User, Volunteer, Organisation, Coordinator
 from app.schemas.enums import UserType
+<<<<<<<< HEAD:app/crud/user_crud.py
 from sqlalchemy.orm import Session
+========
+from locations import Location
+from chat import ChatModel
+from domain import DomainModel
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
+>>>>>>>> add_data_to_db:app/crud/user.py
 
-class UserInfo(BaseModel):
+class UserModel(BaseModel):
     email: str
     password_hash: str
     user_type: UserType
+    location_id: int | None = None
     created_at: date | None = None
     updated_at: date | None = None
+    location: Location | None = None
+    chats: ChatModel | None = None
+    domains: DomainModel | None = None
+
+
 
 class VolunteerInfo(BaseModel):
     first_name: str
@@ -33,7 +47,7 @@ class CoordinatorInfo(BaseModel):
     verified: bool = False
 
 
-def add_user(session: Session, user: UserInfo, other_info: BaseModel) -> User | None:
+def add_user(session: Session, user: UserModel, other_info: BaseModel) -> User | None:
     """
     Adds new user to db.
 
@@ -96,7 +110,7 @@ def add_user(session: Session, user: UserInfo, other_info: BaseModel) -> User | 
         raise Exception("Błąd podczas dodawania użytkownika!")
 
 
-def update_user(session: Session, user_id: int, user_data: UserInfo, other_info: BaseModel) -> User | None:
+def update_user(session: Session, user_id: int, user_data: UserModel, other_info: BaseModel) -> User | None:
     """
     Updates user and related data
 
@@ -175,7 +189,7 @@ def delete_user(session: Session, user_id: int) -> bool:
         raise Exception("Błąd podczas usuwania użytkownika!")
 
 
-def get_user(session: Session, user_id: int) -> User | None:
+def get_user(session: Session, user_id: int) -> UserModel | None:
     """
     Gets User data.
 
@@ -187,11 +201,10 @@ def get_user(session: Session, user_id: int) -> User | None:
     if not user:
         return None
 
-    if user.user_type == UserType.VOLUNTEER:
-        _ = user.volunteer
-    elif user.user_type == UserType.ORGANISATION:
-        _ = user.organisation
-    elif user.user_type == UserType.COORDINATOR:
-        _ = user.coordinator
+    user = UserModel(email=user.email,
+                     password_hash=user.password_hash,
+                     user_type=user.user_type,
+                     created_at=user.created_at,
+                     updated_at=user.updated_at)
 
     return user

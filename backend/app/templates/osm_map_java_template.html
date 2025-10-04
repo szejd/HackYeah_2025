@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenStreetMap Example</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map { height: 500px; width: 100%; }
+    </style>
+</head>
+<body>
+    <h2>OpenStreetMap with markers and coordinate click</h2>
+    <div id="map"></div>
+    <p id="coords"></p>
+    <script>
+        var map = L.map('map').setView([52.2297, 21.0122], 13);
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Add example markers
+        var markers = [
+            {lat: 52.2297, lon: 21.0122, label: "Warsaw Center"},
+            {lat: 52.4064, lon: 16.9252, label: "Poznan"}
+        ];
+        markers.forEach(function(marker) {
+            L.marker([marker.lat, marker.lon]).addTo(map)
+             .bindPopup(marker.label);
+        });
+
+        // Get coordinates from map click
+        map.on('click', function(e) {
+            var lat = e.latlng.lat.toFixed(5);
+            var lon = e.latlng.lng.toFixed(5);
+            document.getElementById('coords').innerText = "Clicked coordinates: " + lat + ", " + lon;
+            // Optionally, add marker on click:
+            // L.marker([lat, lon]).addTo(map).bindPopup("New marker").openPopup();
+        });
+    </script>
+</body>
+</html>
