@@ -1,0 +1,90 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* prevent horizontal stretching */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0066cc;
+    color: white;
+    padding: 10px 20px;
+}
+
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.login-btn {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    background-color: #004a99;
+    border-radius: 5px;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #e6f2ff;
+}
+
+.events {
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden; /* contain hover scaling within section */
+}
+
+.events h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.events-container {
+    position: relative;
+    text-align: center; /* wyśrodkowanie listy */
+}
+
+.events ul {
+    list-style: none;
+    padding: 0;
+    /* Shift list slightly left by leaving a margin on the right side */
+    margin: 0 33% 0 auto; /* top right bottom left */
+    display: block; /* kontener listy jako blok */
+    width: 45%; /* zajmuje ~75% szerokości ekranu */
+    position: relative;
+}
+
+.events li {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 12px; /* zmniejszony odstęp między elementami listy */
+    position: relative; /* dla transform */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    width: 100%; /* element listy wypełnia 75% kontenera UL */
+    min-width: 200px;
+    transform-origin: center; /* scale from center to avoid overflow */
+}
+
+/* efekt hover */
+.events li:hover {
+    transform: translate(var(--x-offset, 0%), var(--y-offset, 0%)) scale(1.02);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+
+
+/* Responsywność: na małych ekranach zajmij więcej szerokości */
+@media (max-width: 768px) {
+    .events ul {
+        width: 92%;
+        margin: 0 3% 0 auto; /* keep some right margin on small screens */
+    }
+}

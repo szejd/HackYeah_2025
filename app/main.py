@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 app.include_router(health_check.router)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-templates = Jinja2Templates(directory="static")
+templates = Jinja2Templates(directory="app/templates")
 
 
 @app.get("/", response_class=HTMLResponse)
