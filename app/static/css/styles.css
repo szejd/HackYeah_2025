@@ -15,6 +15,15 @@ header {
     background-color: #0057B8;
     color: white;
     padding: 10px 20px;
+    height: auto;
+    object-fit: contain;
+}
+
+.auth-logo img {
+    max-width: 100%;
+    height: auto; /* keeps aspect ratio */
+    object-fit: contain; /* ensures no distortion */
+    display: block;
 }
 
 .logo {
@@ -358,6 +367,27 @@ textarea.form-control {
 
 .btn-primary:hover {
     background-color: #004a99;
+}
+.login-btn {
+    background-color: #0057B8; /* Kraków blue */
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* subtle elevation */
+}
+
+.login-btn:hover {
+    background-color: #004a9c; /* slightly darker blue */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-btn:active {
+    background-color: #003d82;
+    transform: scale(0.97); /* press effect */
 }
 
 .auth-secondary {
