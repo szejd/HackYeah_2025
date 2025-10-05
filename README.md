@@ -1,58 +1,117 @@
-# Hackyeah 2025
+# HackYeah 2025 - Digital Volunteer Center
 
-## Dev workflow
+A volunteer management platform built for HackYeah 2025 challenge. This system enables organizations to manage volunteer events, track participation, and coordinate volunteer activities efficiently.
 
-### Setup
+## 📋 Prerequisites
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- Python 3.13 or higher
+- PostgreSQL 18 (for production)
+- Docker & Docker Compose (optional, for containerized deployment)
 
-If you don't have Python3.13 run:
+## 🛠️ Tech Stack
+
+- **Backend Framework**: FastAPI
+- **Database**: SQLAlchemy with PostgreSQL support
+- **Authentication**: JWT (PyJWT + bcrypt)
+- **Templating**: Jinja2
+- **Maps**: Folium, Geopy
+- **Package Management**: uv
+
+## 📦 Installation
+
+### Local Development Setup
+
+1. **Install uv** (Python package manager)
+
+   Follow the [official installation guide](https://docs.astral.sh/uv/getting-started/installation/):
+
+2. **Install Python 3.13** (if not already installed)
+
+   ```bash
+   uv python install 3.13
+   ```
+
+3. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/szejd/HackYeah_2025.git
+   cd HackYeah_2025
+   ```
+
+4. **Create and activate virtual environment**
+
+   ```bash
+   uv venv
+   source .venv/bin/activate  # On Linux/macOS
+   # or
+   .\.venv\Scripts\activate.bat  # On Windows
+   ```
+
+5. **Install dependencies**
+
+   ```bash
+   uv sync --dev
+   ```
+
+6. **Set up environment variables**
+
+   Create a `.env` file in the root directory. See `.env.example`.
+
+### Docker Deployment
+
+1. **Build and run with Docker Compose**
+
+   ```bash
+   docker compose up --build
+   ```
+
+2. **Access the application**
+   - API: <http://localhost:8000>
+   - API Documentation: <http://localhost:8000/docs>
+
+## 🚀 Usage
+
+### Running the Application
+
+**Development Mode** (with auto-reload):
 
 ```bash
-uv python install 3.13
+uv run fastapi dev
 ```
 
-Then create venv:
+**Production Mode**:
 
 ```bash
-uv venv
+uv run fastapi run
 ```
 
-Don't forget to activate it:
+## 🧪 Testing
+
+### Run All Tests
 
 ```bash
-source .venv/bin/activate
+uv run pytest tests/ -v
 ```
 
-or on Windows:
-
-```bash
-.\.venv\Scripts\activate.bat
-```
-
-After that simply run:
-
-```bash
-uv sync --dev
-```
-
-If you want to add some package run:
-
-```bash
-uv add some-package
-```
-
-[Some uv cheat sheet can be found here](https://gist.github.com/gwangjinkim/70b353e63492e2bdd37f24b441b128b4).
+## 🔍 Code Quality
 
 ### Linting & Formatting
+
+Check code with Ruff:
 
 ```bash
 uv run ruff check app/ tests/
 ```
 
-Consider adding it as a precommit.
+Auto-fix issues:
 
-We can also add type checking using mypy. The best option is to run [dmypy](https://mypy.readthedocs.io/en/stable/mypy_daemon.html):
+```bash
+uv run ruff check --fix app/ tests/
+```
+
+### Type Checking (Optional)
+
+Using dmypy daemon for faster type checking:
 
 ```bash
 # Start the daemon
@@ -65,22 +124,80 @@ uv run dmypy check -- app/ tests/
 uv run dmypy stop
 ```
 
-### Tests
+## 📁 Project Structure
 
 ```bash
-uv run pytest tests/ -v
+HackYeah_2025/
+├── app/
+│   ├── crud/           # Database CRUD operations
+│   ├── db_handler/     # Database connection and utilities
+│   ├── models/         # SQLAlchemy models
+│   ├── routes/         # API endpoints
+│   ├── schemas/        # Pydantic schemas and enums
+│   ├── services/       # Business logic (OSM maps, etc.)
+│   ├── static/         # Static files (CSS, JS, assets)
+│   ├── templates/      # Jinja2 HTML templates
+│   ├── utils/          # Utility functions (auth, time, etc.)
+│   ├── config.py       # Configuration management
+│   ├── logs.py         # Logging setup
+│   └── main.py         # FastAPI application entry point
+├── tests/              # Test suite
+├── data/               # Data files
+├── docker-compose.yml  # Docker composition
+├── Dockerfile          # Docker image definition
+├── pyproject.toml      # Project metadata and dependencies
+└── README.md           # This file
 ```
 
-### Usage
+## 🔐 Authentication
 
-To run the app in dev mode run command:
+The application uses JWT (JSON Web Tokens) for authentication. Here's a quick example:
+
+1. **Register a user**:
+
+   ```bash
+   curl -X POST "http://localhost:8000/users/register/volunteer" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "volunteer@example.com",
+       "password": "SecurePass123",
+       "first_name": "John",
+       "last_name": "Doe"
+     }'
+   ```
+
+2. **Login to get token**:
+
+   ```bash
+   curl -X POST "http://localhost:8000/users/login" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "volunteer@example.com",
+       "password": "SecurePass123"
+     }'
+   ```
+
+3. **Use token for authenticated requests**:
+
+   ```bash
+   curl -X GET "http://localhost:8000/users/me" \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN"
+   ```
+
+## 📦 Adding Dependencies
+
+To add a new package:
 
 ```bash
-uv run fastapi dev
+uv add package-name
 ```
 
-For production code run command:
+For development dependencies:
 
 ```bash
-uv run fastapi run
+uv add --dev package-name
 ```
+
+## 👥 Team
+
+Built with ❤️ for HackYeah 2025 ✨ŁapkiDevs✨
