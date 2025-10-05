@@ -312,7 +312,7 @@ header {
 
 .form-control {
     width: 100%;
-    padding: 8px 12px;
+    padding: 8px 2px;
     border-radius: 6px;
     border: 1px solid #ced4da;
     outline: none;
