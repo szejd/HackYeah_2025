@@ -74,6 +74,13 @@ function updateAuthButton() {
         authButton.onclick = null;
         authButton.title = '';
     }
+
+    // Additionally hide any other .login-btn buttons (except the header auth button) when logged in
+    const loginButtons = document.querySelectorAll('.login-btn');
+    loginButtons.forEach(btn => {
+        if (btn.id === 'auth-button') return; // keep header button visible
+        btn.style.display = isUserLoggedIn() ? 'none' : '';
+    });
 }
 
 // ==================== Event Animations ====================

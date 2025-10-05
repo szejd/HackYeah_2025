@@ -64,3 +64,4 @@ temp/
 *.sqlite3
 *.db
 *.sqlite
+test_db
