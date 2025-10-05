@@ -5,7 +5,6 @@ from event import EventModel
 from app.models.user import UserResponse
 
 
-
 class RegistrationModel(BaseModel):
     id: int
     user_id: int
