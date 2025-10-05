@@ -3,6 +3,7 @@ from user import UserModel
 from event import EventModel
 from datetime import date
 
+
 class RegistrationModel(BaseModel):
     id: int
     user_id: int

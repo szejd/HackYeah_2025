@@ -7,6 +7,7 @@ from task import TaskModel
 from registration import RegistrationModel
 from certificate import CertificateModel
 
+
 class EventModel(BaseModel):
     id: int
     name: str
