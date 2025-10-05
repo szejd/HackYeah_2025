@@ -3,7 +3,6 @@ import folium
 import os
 from pathlib import Path
 from app.schemas.enums import LocationType
-from app.crud.location import get_all_locations
 
 
 class OSMMap:

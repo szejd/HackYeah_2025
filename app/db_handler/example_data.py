@@ -8,9 +8,9 @@ from app.schemas.db_models import User
 from app.schemas.enums import UserType, LocationType
 from app.services.osm_maps import generate_map_with_locations
 
+
 def add_data(session: Session):
     add_schools_as_organisations(session=session)
-
 
 
 def add_schools_as_organisations(session: Session):
@@ -27,19 +27,18 @@ def add_schools_as_organisations(session: Session):
         schoole_name = row._4
         address = f"{row.Ulica} {row._24}, {row.Miejscowość}"
         print(f"{schoole_name}: {address}")
-        user_db = User(email=f"test{idx}@krakow.um.pl",
-                       password_hash="dummy@#$pass",
-                       user_type=UserType.ORGANISATION)
+        user_db = User(email=f"test{idx}@krakow.um.pl", password_hash="dummy@#$pass", user_type=UserType.ORGANISATION)
         session.add(user_db)
         session.commit()
         session.refresh(user_db)
-        org = OrganisationCreate(org_name=schoole_name,
-                           contact_person=f"Smok Wawelski nr {idx}",
-                           description=schoole_name,
-                           phone_number="123456789",
-                           address=address,
-                           verified=True
-                           )
+        org = OrganisationCreate(
+            org_name=schoole_name,
+            contact_person=f"Smok Wawelski nr {idx}",
+            description=schoole_name,
+            phone_number="123456789",
+            address=address,
+            verified=True,
+        )
 
         org = create_organisation(session, user_db, org_data=org)
         location_data = AddLocation(address=org.address, location_name=org.org_name)
@@ -50,10 +49,6 @@ def add_schools_as_organisations(session: Session):
         session.refresh(location)
 
 
-
-
-
-
 from app.db_handler.db_connection import SessionLocal
 
 session = SessionLocal()
@@ -61,8 +56,12 @@ add_schools_as_organisations(session)
 locations = get_all_locations(session)
 location_datas = []
 for location in locations:
-    location_datas.append(LocationData(name=location.name,
-                                       latitude=location.latitude,
-                                       longitude=location.longitude,
-                                       category=LocationType.ORGANISATION))
+    location_datas.append(
+        LocationData(
+            name=location.name,
+            latitude=location.latitude,
+            longitude=location.longitude,
+            category=LocationType.ORGANISATION,
+        )
+    )
 generate_map_with_locations(location_datas)

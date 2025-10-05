@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from app.schemas.enums import LocationType, UserType
+from app.schemas.enums import LocationType
 
 
 class LocationData(BaseModel):
@@ -7,6 +7,7 @@ class LocationData(BaseModel):
     latitude: float
     longitude: float
     category: LocationType
+
 
 class AddLocation(BaseModel):
     address: str

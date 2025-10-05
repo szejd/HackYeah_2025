@@ -16,4 +16,3 @@ class LocationType(StrEnum):
 class RegistrationStatus(Enum):
     PENDING = auto()
     CONFIRMED = auto()
-
