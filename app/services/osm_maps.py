@@ -24,8 +24,8 @@ class OSMMap:
                     <p style="margin:4px 0;color:#34495e;">{description if description is not None else ""}</p>
                     <a href="YOUR_REGISTRATION_URL"
                        style="display:inline-block;padding:10px 24px;margin-top:12px;background:#3498db;color:#fff;font-weight:bold;text-decoration:none;border-radius:4px;box-shadow:0 1px 4px rgba(52,152,219,0.2);transition:background 0.2s;"
-                       onmouseover="this.style.background='#2980b9';"
-                       onmouseout="this.style.background='#3498db';">
+                       onmouseover="this.style.background='#de476c';"
+                       onmouseout="this.style.background='#e77e98';">
                        Zarejestruj!
                     </a>
                 </div>
