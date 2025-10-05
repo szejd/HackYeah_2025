@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.crud.event import EventModel
+from app.models.event import EventModel
 from certificate import CertificateModel
 
 

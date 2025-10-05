@@ -1,4 +1,4 @@
-from app.schemas.enums import UserType
+from app.schemas.enums import UserType, RegistrationStatus
 from app.utils.time_utils import get_poland_time_now
 
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
@@ -41,7 +41,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     user_type: Mapped[UserType] = mapped_column(Enum(UserType, name="user_type"), nullable=False)
-    location_id: Mapped[int | None] = mapped_column(ForeignKey("location.id"), nullable=True)
+    location_id: Mapped[int | None] = mapped_column(ForeignKey("location.id"), nullable=True, default=None)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=get_poland_time_now())
     updated_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=get_poland_time_now(), onupdate=get_poland_time_now()
@@ -147,6 +147,7 @@ class Event(Base):
     signup_end: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False)
     location_id: Mapped[int] = mapped_column(ForeignKey("location.id"))
     organisation_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    max_no_of_users: Mapped[int] = mapped_column(Integer)
 
     location: Mapped["Location"] = relationship("Location", back_populates="events")
     organisation: Mapped["User"] = relationship("User", foreign_keys=[organisation_id])
@@ -207,7 +208,7 @@ class Registration(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     event_id: Mapped[int] = mapped_column(ForeignKey("event.id"))
     registered_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=get_poland_time_now())
-    status: Mapped[str] = mapped_column(String(50))
+    status: Mapped[RegistrationStatus] = mapped_column(Enum(RegistrationStatus, name="status"), nullable=False)
 
     user: Mapped["User"] = relationship("User")
     event: Mapped["Event"] = relationship("Event", back_populates="registrations")
