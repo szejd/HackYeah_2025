@@ -2,7 +2,7 @@ import logging
 from enum import StrEnum
 
 from pydantic import field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DBType(StrEnum):
@@ -11,6 +11,8 @@ class DBType(StrEnum):
 
 
 class EnvConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
     SERVER_ADDRESS: str = "0.0.0.0"
     DB_TYPE: DBType = DBType.SQLITE
     DB_NAME: str = "test_db"
@@ -67,10 +69,6 @@ class EnvConfig(BaseSettings):
                 raise ValueError(f"Invalid DB_TYPE: {value}")
 
         raise ValueError(f"Invalid DB_TYPE: {value}")
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
 
 
 env_config = EnvConfig()
