@@ -89,16 +89,16 @@ jobs:
         with:
           context: .
           push: false
-          tags: resty:${{ steps.get_version.outputs.VERSION }}
-          outputs: type=docker,dest=/tmp/resty-image.tar
+          tags: hackyeah2025:${{ steps.get_version.outputs.VERSION }}
+          outputs: type=docker,dest=/tmp/hackyeah2025-image.tar
           
       - name: Compress Docker image
         run: |
           mkdir -p ./artifacts
-          gzip -c /tmp/resty-image.tar > ./artifacts/resty-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          gzip -c /tmp/hackyeah2025-image.tar > ./artifacts/hackyeah2025-${{ steps.get_version.outputs.VERSION }}.tar.gz
       
       - name: Upload Docker image to release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./artifacts/resty-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          files: ./artifacts/hackyeah2025-${{ steps.get_version.outputs.VERSION }}.tar.gz
           tag_name: ${{ steps.get_version.outputs.VERSION }}
