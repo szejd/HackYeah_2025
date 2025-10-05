@@ -1,6 +1,6 @@
 [project]
 name = "hackyeah-2025"
-version = "0.0.1"
+version = "0.1.2"
 description = "Solution to HackYeah 2025 challenge"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -16,6 +16,8 @@ dependencies = [
     "geopy>=2.4.1",
     "pandas>=2.3.3",
     "folium>=0.20.0",
+    "pyjwt>=2.10.1",
+    "bcrypt>=5.0.0",
 ]
 
 [dependency-groups]

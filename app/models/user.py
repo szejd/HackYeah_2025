@@ -32,6 +32,15 @@ class UserLogin(BaseModel):
     password: str
 
 
+class TokenResponse(BaseModel):
+    """Model for JWT token response."""
+
+    access_token: str
+    token_type: str = "bearer"
+    user: "UserResponse"
+    success: bool = False
+
+
 class UserResponse(UserBase):
     """User information returned to frontend (without sensitive data)."""
 

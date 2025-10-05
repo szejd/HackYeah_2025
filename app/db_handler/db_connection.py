@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
 
 from app.schemas.db_models import Base
-from app.config import DB_NAME, DB_TYPE, DB_USER, DB_PASSWORD, SERVER_ADDRESS
+from app.config import DB_NAME, DB_TYPE, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 from app.db_handler.db_util import ConnectionStringBuilder
 # from app.db_handler.example_data import add_data
 
@@ -23,7 +23,7 @@ def create_db_engine(echo: bool = False) -> Engine:
     Returns:
         Engine: Configured SQLAlchemy engine
     """
-    db_conn = ConnectionStringBuilder.build(DB_TYPE, DB_NAME, DB_USER, DB_PASSWORD, SERVER_ADDRESS)
+    db_conn = ConnectionStringBuilder.build(DB_TYPE, DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT)
     try:
         engine = create_engine(
             db_conn,
@@ -59,7 +59,6 @@ def init_db(engine: Engine) -> None:
 
 # Create engine and session factory
 engine = create_db_engine(echo=True)
-init_db(engine)
 
 # Create a session factory
 SessionLocal = sessionmaker(

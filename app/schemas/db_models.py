@@ -52,9 +52,9 @@ class User(Base):
     domains: Mapped[list["Domain"]] = relationship("Domain", secondary=user_domain_association, back_populates="users")
     time_logs: Mapped[list["TimeLog"]] = relationship("TimeLog", back_populates="user")
 
-    volunteer = relationship("Volunteer", uselist=False, back_populates="user", cascade="delete, delete-orphan")
-    organisation = relationship("Organisation", uselist=False, back_populates="user", cascade="delete, delete-orphan")
-    coordinator = relationship("Coordinator", uselist=False, back_populates="user", cascade="delete, delete-orphan")
+    volunteer = relationship("Volunteer", uselist=False, back_populates="user", cascade="all, delete-orphan")
+    organisation = relationship("Organisation", uselist=False, back_populates="user", cascade="all, delete-orphan")
+    coordinator = relationship("Coordinator", uselist=False, back_populates="user", cascade="all, delete-orphan")
 
 
 class Volunteer(Base):

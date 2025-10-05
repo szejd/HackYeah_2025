@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: hackyeah_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-test_db}
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - hackyeah_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-user} -d ${DB_NAME:-test_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hackyeah_app
+    restart: unless-stopped
+    environment:
+      SERVER_ADDRESS: ${SERVER_ADDRESS:-0.0.0.0}
+      DB_HOST: ${DB_HOST:-localhost}
+      DB_TYPE: postgresql
+      DB_NAME: ${DB_NAME:-hackyeah_db}
+      DB_USER: ${DB_USER:-hackyeah_user}
+      DB_PASSWORD: ${DB_PASSWORD:-hackyeah_password}
+      DB_PORT: 5432
+      APP_LOG_LEVEL: ${APP_LOG_LEVEL:-INFO}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-super-secret-key}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - hackyeah_network
+    command: uv run uvicorn app.main:app --host ${SERVER_ADDRESS:-0.0.0.0} --port 8000 --reload
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  hackyeah_network:
+    driver: bridge
