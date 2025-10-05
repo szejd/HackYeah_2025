@@ -17,14 +17,12 @@
 
     <section class="auth-card">
         <h1 id="register-title">Utwórz konto wolontariusza</h1>
-        <form method="post" action="/register" class="auth-form">
+        <form class="auth-form">
             <div class="form-group">
                 <label for="user_type">Rola</label>
                 <select id="user_type" class="form-control" name="user_type" required>
                       <option value="">--Wskaż kim jesteś--</option>
                       <option value="volunteer">Wolontariusz</option>
-                      <option value="organisation">Organizacja</option>
-                      <option value="coordinator">Koordynator</option>
                 </select>
             </div>
             <div class="form-group">
@@ -51,7 +49,7 @@
                 <label for="birth_date">Data urodzenia</label>
                 <input type="date" id="birth_date" name="birth_date" class="form-control" value="{{ birth_date or '' }}" required>
             </div>
-            <button type="submit" class="btn btn-primary">Utwórz konto</button>
+            <button id="registerButton" type="submit" class="btn btn-primary">Utwórz konto</button>
         </form>
     </section>
 
@@ -70,22 +68,32 @@
     </footer>
 </main>
  <script>
-    document.getElementById("userForm").addEventListener("submit", async (e) => {
+     const sendButton = document.getElementById("registerButton");
+     sendButton.addEventListener("click", async () => {
       e.preventDefault();
-
-      const data = {
-        first_name: document.getElementById("first_name").value,
-        last_name: document.getElementById("last_name").value,
-        password: document.getElementById("password").value,
-        email: document.getElementById("email").value,
-        birth_date: document.getElementById("birth_date").value,
-        phone_number: document.getElementById("phone_number").value,
-        user_type: document.getElementById("user_type").value
+      const userType = document.getElementById("user_type").value;
+      const data = {user: {
+          user_type: userType,
+          password: document.getElementById("password").value,
+          email: document.getElementById("email").value,
+          },volunteer: {
+            first_name: document.getElementById("first_name").value,
+            last_name: document.getElementById("last_name").value,
+            birth_date: document.getElementById("birth_date").value,
+            phone_number: document.getElementById("phone_number").value,
+          }
       };
+       let url;
+      if(userType === "volunteer") {
+        url = "/register/volunteer";
+      } else if(userType === "organisation") {
+        url = "/register/organisation";
+      } else {
+        url = "/register/"; // fallback
+      }
 
       try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`${apiBase}/users/`, {
+        const response = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
@@ -93,6 +101,7 @@
 
         const result = await response.json();
         document.getElementById("result").textContent = JSON.stringify(result, null, 2);
+        window.location.href = "/login";
       } catch (error) {
         document.getElementById("result").textContent = "Error: " + error;
       }

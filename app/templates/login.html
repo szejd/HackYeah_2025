@@ -16,7 +16,7 @@
 
     <section class="auth-card">
         <h1 id="auth-title">Zaloguj się do KCW</h1>
-        <form method="post" action="/login" class="auth-form">
+        <form class="auth-form">
             <div class="form-group">
                 <label for="email">Adres email</label>
                 <input type="email" id="email" name="email" class="form-control" value="{{ email or '' }}" required autocomplete="username">
@@ -28,7 +28,7 @@
                 </div>
                 <input type="password" id="password" name="password" class="form-control" required autocomplete="current-password">
             </div>
-            <button type="submit" class="btn btn-primary">Zaloguj się</button>
+            <button id="loginButton" type="submit" class="btn btn-primary">Zaloguj się</button>
         </form>
     </section>
 
@@ -46,5 +46,25 @@
         <p>© 2025 Krakowskie Centrum Wolontariatu</p>
     </footer>
 </main>
+<script>
+    const submitButton = document.getElementById("loginButton");
+     submitButton.addEventListener("click", async () => {
+         // 1. Login
+         const loginResponse = await fetch('/login', {
+             method: 'POST',
+             headers: {
+                 'Content-Type': 'application/json',
+             },
+             body: JSON.stringify({
+                 email: document.getElementById("email").value,
+                 password: document.getElementById("password").value
+             })
+         });
+            const {access_token} = await loginResponse.json();
+            // 2. Store token (e.g., in localStorage)
+            localStorage.setItem('token', access_token);
+            window.location.href = "/";
+        });
+</script>
 </body>
 </html>
