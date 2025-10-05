@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Krakowskie Centrum Wolontariatu{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <!-- Leaflet CSS for maps on event card back side -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -27,6 +29,8 @@
                 href="#" style="color:inherit;">Warunki</a> · <a href="#" style="color:inherit;">Kontakt</a></p>
     </footer>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="{{ url_for('static', path='js/scripts.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
