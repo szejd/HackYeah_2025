@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from user import UserModel
-from event import EventModel
 from datetime import date
+
+from pydantic import BaseModel
+from event import EventModel
+from app.models.user import UserResponse
+
 
 class RegistrationModel(BaseModel):
     id: int
@@ -9,5 +11,5 @@ class RegistrationModel(BaseModel):
     event_id: int
     registered_at: date
     status: str
-    user: UserModel
+    user: UserResponse
     event: EventModel
