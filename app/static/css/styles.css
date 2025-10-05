@@ -22,7 +22,7 @@ header {
     font-weight: bold;
 }
 
-.login-btn, .btn-outline {
+.login-btn, .btn-outline, .btn-upcoming-events {
     color: white;
     text-decoration: none;
     padding: 8px 12px;
@@ -399,3 +399,19 @@ textarea.form-control {
 .foo {
     background-color: #0057B8;
 }
+/* Calendar Styles */
+.calendar-wrapper { width: 100%; }
+.calendar { background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 1rem; }
+.calendar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem; }
+.calendar-title { font-weight:700; text-transform: capitalize; }
+.calendar-nav { background:#0057B8; color:#fff; border:none; border-radius:6px; padding:6px 10px; cursor:pointer; }
+.calendar-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.calendar-weekday { font-weight:600; text-align:center; padding:6px 0; color:#334; }
+.calendar-day { position:relative; min-height:80px; border:1px solid #eef2f9; border-radius:10px; padding:6px; background:#fafcff; }
+.calendar-day.empty { background: transparent; border: none; }
+.day-number { font-size:0.9rem; color:#222; }
+.has-event { border-color:#cfe4ff; background:#f4f9ff; }
+.event-dots { position:absolute; bottom:6px; left:6px; display:flex; gap:4px; }
+.event-dot { width:8px; height:8px; background:#0057B8; border-radius:50%; display:inline-block; }
+.event-tip { display:none; position:absolute; top:28px; left:6px; background:#1e293b; color:#fff; padding:8px 10px; border-radius:8px; font-size:12px; z-index:5; box-shadow:0 6px 18px rgba(0,0,0,0.18); max-width:240px; }
+.calendar-day.has-event:hover .event-tip { display:block; }

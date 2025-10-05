@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
-from app.routes import user, health_check, navigation
+from app.routes import user, health_check, navigation, event
 from app.logs import setup_logging
 from app.config import SERVER_ADDRESS
 from app.db_handler.db_connection import init_db, engine
@@ -37,6 +37,7 @@ app = FastAPI(
 app.include_router(health_check.router)
 app.include_router(user.router)
 app.include_router(navigation.router)
+app.include_router(event.router)
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
