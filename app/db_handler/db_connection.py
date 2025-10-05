@@ -60,6 +60,8 @@ def init_db(engine: Engine) -> None:
 # Create engine and session factory
 engine = create_db_engine(echo=True)
 
+init_db(engine)
+
 # Create a session factory
 SessionLocal = sessionmaker(
     bind=engine,
