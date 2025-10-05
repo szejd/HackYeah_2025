@@ -8,6 +8,7 @@ from sqlalchemy.pool import QueuePool
 from app.schemas.db_models import Base
 from app.config import DB_NAME, DB_TYPE, DB_USER, DB_PASSWORD, SERVER_ADDRESS
 from app.db_handler.db_util import ConnectionStringBuilder
+# from app.db_handler.example_data import add_data
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +69,10 @@ SessionLocal = sessionmaker(
     future=True,
     expire_on_commit=False,  # Don't expire objects after commit
 )
+
+db_session = SessionLocal()
+
+# add_data(db_session)
 
 
 def get_db() -> Generator[Session, None, None]:

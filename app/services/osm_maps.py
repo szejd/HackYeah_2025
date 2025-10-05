@@ -1,8 +1,9 @@
-from app.crud.locations import LocationData
+from app.models.location import LocationData
 import folium
 import os
 from pathlib import Path
 from app.schemas.enums import LocationType
+from app.crud.location import get_all_locations
 
 
 class OSMMap:
@@ -38,14 +39,14 @@ def generate_map_with_locations(locations: list[LocationData], map_filename: str
         os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "templates", map_filename)
     )
     my_map = OSMMap()
-    my_map.add_marker(50.0530, 19.9336, "Smok Wawelski", LocationType.ORGANISATION)
-    my_map.add_marker(50.0617, 19.9334, "Collegium Maius", LocationType.ORGANISATION)
-    my_map.add_marker(50.0677, 19.9915, "HackYeah 2025", LocationType.EVENT)
-    # for location in locations:
-    #     my_map.add_marker(location.latitude, location.longitude, location.name)
+    # my_map.add_marker(50.0530, 19.9336, "Smok Wawelski", LocationType.ORGANISATION)
+    # my_map.add_marker(50.0617, 19.9334, "Collegium Maius", LocationType.ORGANISATION)
+    # my_map.add_marker(50.0677, 19.9915, "HackYeah 2025", LocationType.EVENT)
+    for location in locations:
+        my_map.add_marker(location.latitude, location.longitude, location.name)
     my_map.generate_map(map_location=map_location)
 
 
 # Example usage
-if __name__ == "__main__":
-    generate_map_with_locations(locations=[])
+# if __name__ == "__main__":
+#     generate_map_with_locations(locations=)

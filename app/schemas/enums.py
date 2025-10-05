@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import StrEnum, Enum, auto
 
 
 class UserType(StrEnum):
@@ -7,7 +7,13 @@ class UserType(StrEnum):
     COORDINATOR = "coordinator"
 
 
-class LocationType(Enum):
+class LocationType(StrEnum):
     VOLUNTEER = "volunteer"
     ORGANISATION = "organisation"
     EVENT = "event"
+
+
+class RegistrationStatus(Enum):
+    PENDING = auto()
+    CONFIRMED = auto()
+
