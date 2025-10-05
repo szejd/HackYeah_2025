@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from app.crud.user import create_organisation, OrganisationCreate
 from app.crud.location import add_address, get_all_locations
+from app.db_handler.db_connection import SessionLocal
 from app.models.location import AddLocation, LocationData
 from app.schemas.db_models import User
 from app.schemas.enums import UserType, LocationType
@@ -48,8 +49,6 @@ def add_schools_as_organisations(session: Session):
         session.refresh(user_db)
         session.refresh(location)
 
-
-from app.db_handler.db_connection import SessionLocal
 
 session = SessionLocal()
 add_schools_as_organisations(session)
