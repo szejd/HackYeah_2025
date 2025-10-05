@@ -156,6 +156,8 @@ def create_organisation(
         verified=org_data.verified,
     )
     session.add(organisation)
+    session.commit()
+    session.refresh(organisation)
     return organisation
 
 

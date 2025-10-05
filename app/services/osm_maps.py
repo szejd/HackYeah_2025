@@ -23,7 +23,7 @@ class OSMMap:
                     <h1 style="margin-top:0;color:#2c3e50;">Event: {popup}</h1>
                     <p style="margin:4px 0;color:#34495e;">{description if description is not None else ""}</p>
                     <a href="YOUR_REGISTRATION_URL"
-                       style="display:inline-block;padding:10px 24px;margin-top:12px;background:#3498db;color:#fff;font-weight:bold;text-decoration:none;border-radius:4px;box-shadow:0 1px 4px rgba(52,152,219,0.2);transition:background 0.2s;"
+                       style="display:inline-block;padding:10px 24px;margin-top:12px;background:#e77e98;color:#fff;font-weight:bold;text-decoration:none;border-radius:4px;box-shadow:0 1px 4px rgba(52,152,219,0.2);transition:background 0.2s;"
                        onmouseover="this.style.background='#de476c';"
                        onmouseout="this.style.background='#e77e98';">
                        Zarejestruj!
@@ -54,16 +54,15 @@ def generate_map_with_locations(locations: list[LocationData], map_filename: str
     )
     my_map = OSMMap()
     # my_map.add_marker(50.0530, 19.9336, "Smok Wawelski", LocationType.ORGANISATION)
-    # my_map.add_marker(50.0617, 19.9334, "Collegium Maius", LocationType.ORGANISATION)
+    for location in locations:
+        my_map.add_marker(location.latitude, location.longitude, location.name)
     my_map.add_marker(
         50.0677,
         19.9915,
         "HackYeah 2025",
-        LocationType.EVENT,
+        category=LocationType.EVENT,
         description="największy stacjonarny hackathon w Europie, który odbywa się w dniach 4-5 października 2025 w TAURON Arenie Kraków",
     )
-    for location in locations:
-        my_map.add_marker(location.latitude, location.longitude, location.name)
     my_map.generate_map(map_location=map_location)
 
 

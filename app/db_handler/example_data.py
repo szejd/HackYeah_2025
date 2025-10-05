@@ -5,9 +5,10 @@ from app.crud.user import create_organisation, OrganisationCreate
 from app.crud.location import add_address, get_all_locations
 from app.db_handler.db_connection import SessionLocal
 from app.models.location import AddLocation, LocationData
-from app.schemas.db_models import User
+from app.schemas.db_models import User, Event
 from app.schemas.enums import UserType, LocationType
 from app.services.osm_maps import generate_map_with_locations
+import datetime
 
 
 def add_data(session: Session):
@@ -16,7 +17,36 @@ def add_data(session: Session):
 
 
 def add_events(session: Session):
-    pass
+    user_db = User(email="biuro@proidea.org.pl", password_hash="dummy@#$pass", user_type=UserType.ORGANISATION)
+    session.add(user_db)
+    session.commit()
+    session.refresh(user_db)
+    org = OrganisationCreate(
+        org_name="Proidea Sp. z o.o.",
+        contact_person="ADRIAN LEGUTKO",
+        description="Proidea Sp. z o.o.",
+        phone_number="123456789",
+        address="ul.Zakopiańska 9, 30 - 418 Kraków",
+        verified=True,
+    )
+
+    org = create_organisation(session, user_db, org_data=org)
+    location_data = AddLocation(address="Stanisława Lema 7, 31-571 Kraków", location_name="Tauron Arena")
+    location = add_address(session=session, location_data=location_data)
+
+    event = Event(name="HackYeah 2025",
+                  description="największy stacjonarny hackathon w Europie, który odbywa się w dniach 4-5 października 2025 w TAURON Arenie Kraków",
+                  start_date=datetime.datetime.strptime("2025-10-04", "%Y-%m-%d"),
+                  end_date=datetime.datetime.strptime("2025-10-05", "%Y-%m-%d"),
+                  signup_start=datetime.datetime.strptime("2025-07-04", "%Y-%m-%d"),
+                  signup_end=datetime.datetime.strptime("2025-10-04", "%Y-%m-%d"),
+                  location_id=location.id,
+                  organisation_id=org.id,
+                  max_no_of_users=400
+                  )
+    session.add(event)
+    session.commit()
+    session.refresh(event)
 
 
 def add_schools_as_organisations(session: Session):
@@ -57,7 +87,7 @@ def add_schools_as_organisations(session: Session):
 
 def generate_map_from_example_data():
     session = SessionLocal()
-    add_schools_as_organisations(session)
+    add_data(session)
     locations = get_all_locations(session)
     location_datas = []
     for location in locations:
