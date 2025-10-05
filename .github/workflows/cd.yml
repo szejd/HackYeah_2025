@@ -30,10 +30,10 @@ jobs:
           git config pull.rebase false  # Configure to use merge strategy
           git fetch origin main
           git merge origin/main
-          OLD_VERSION=$(grep ^version backend/pyproject.toml | cut -d '"' -f 2)
+          OLD_VERSION=$(grep ^version pyproject.toml | cut -d '"' -f 2)
           OLD_VERSION="\"$OLD_VERSION\""
           NEW_VERSION="\"${{ steps.extract_version.outputs.VERSION }}\""
-          sed -i "s+version = $OLD_VERSION+version = $NEW_VERSION+g" backend/pyproject.toml
+          sed -i "s+version = $OLD_VERSION+version = $NEW_VERSION+g" pyproject.toml
           
       - name: Commit Changes
         run: |
@@ -45,6 +45,7 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
+    needs: update-version-number
     permissions:
       contents: write
     
