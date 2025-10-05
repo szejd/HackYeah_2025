@@ -11,16 +11,17 @@ class DBType(StrEnum):
 
 
 class EnvConfig(BaseSettings):
+    SERVER_ADDRESS: str = "0.0.0.0"
     DB_TYPE: DBType = DBType.SQLITE
-    DB_NAME: str = ""
-    DB_USER: str = ""
-    DB_PASSWORD: str = ""
-    DB_HOST: str = "0.0.0.0"
+    DB_NAME: str = "test_db"
+    DB_USER: str = "user"
+    DB_PASSWORD: str = "password"
+    DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     APP_LOG_LEVEL: int = logging.INFO  # Default log level as int
 
     # JWT Settings
-    JWT_SECRET_KEY: str = ""  # Change this in production!
+    JWT_SECRET_KEY: str = "super-secret-key"  # Change this in production!
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
@@ -73,6 +74,7 @@ class EnvConfig(BaseSettings):
 
 
 env_config = EnvConfig()
+SERVER_ADDRESS = env_config.SERVER_ADDRESS
 DB_HOST = env_config.DB_HOST
 DB_TYPE = env_config.DB_TYPE
 DB_NAME = env_config.DB_NAME
