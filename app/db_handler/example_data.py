@@ -55,17 +55,21 @@ def add_schools_as_organisations(session: Session):
         session.refresh(location)
 
 
-session = SessionLocal()
-add_schools_as_organisations(session)
-locations = get_all_locations(session)
-location_datas = []
-for location in locations:
-    location_datas.append(
-        LocationData(
-            name=location.name,
-            latitude=location.latitude,
-            longitude=location.longitude,
-            category=LocationType.ORGANISATION,
+def generate_map_from_example_data():
+    session = SessionLocal()
+    add_schools_as_organisations(session)
+    locations = get_all_locations(session)
+    location_datas = []
+    for location in locations:
+        location_datas.append(
+            LocationData(
+                name=location.name,
+                latitude=location.latitude,
+                longitude=location.longitude,
+                category=LocationType.ORGANISATION,
+            )
         )
-    )
-generate_map_with_locations(location_datas)
+    generate_map_with_locations(location_datas)
+
+generate_map_from_example_data()
+

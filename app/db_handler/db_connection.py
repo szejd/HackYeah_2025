@@ -50,6 +50,7 @@ def init_db(engine: Engine) -> None:
         engine: SQLAlchemy engine instance
     """
     try:
+        # Base.metadata.drop_all(engine)
         Base.metadata.create_all(engine)
         logger.info("Database tables created successfully")
     except Exception as e:
@@ -72,6 +73,7 @@ SessionLocal = sessionmaker(
 )
 
 db_session = SessionLocal()
+
 
 # add_data(db_session)
 
