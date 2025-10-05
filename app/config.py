@@ -11,11 +11,12 @@ class DBType(StrEnum):
 
 
 class EnvConfig(BaseSettings):
-    SERVER_ADDRESS: str = ""
     DB_TYPE: DBType = DBType.SQLITE
     DB_NAME: str = ""
     DB_USER: str = ""
     DB_PASSWORD: str = ""
+    DB_HOST: str = "0.0.0.0"
+    DB_PORT: int = 5432
     APP_LOG_LEVEL: int = logging.INFO  # Default log level as int
 
     # JWT Settings
@@ -72,11 +73,12 @@ class EnvConfig(BaseSettings):
 
 
 env_config = EnvConfig()
-SERVER_ADDRESS = env_config.SERVER_ADDRESS
+DB_HOST = env_config.DB_HOST
 DB_TYPE = env_config.DB_TYPE
 DB_NAME = env_config.DB_NAME
 DB_USER = env_config.DB_USER
 DB_PASSWORD = env_config.DB_PASSWORD
+DB_PORT = env_config.DB_PORT
 APP_LOG_LEVEL = env_config.APP_LOG_LEVEL
 JWT_SECRET_KEY = env_config.JWT_SECRET_KEY
 JWT_ALGORITHM = env_config.JWT_ALGORITHM
