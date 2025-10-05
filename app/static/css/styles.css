@@ -31,7 +31,7 @@ header {
     font-weight: bold;
 }
 
-.login-btn, .btn-outline, .btn-upcoming-events {
+.login-btn, .btn-outline, .btn-upcoming-events, .btn-primary {
     color: white;
     text-decoration: none;
     padding: 8px 12px;
@@ -407,14 +407,14 @@ textarea.form-control {
     cursor: pointer;
 }
 
-.btn-primary {
+.btn-user {
     background-color: #0057B8;
     /* Kraków blue */
     border-color: rgba(0, 0, 0, 0.05);
     color: #fff;
 }
 
-.btn-primary:hover {
+.btn-user:hover {
     background-color: #004a99;
 }
 .login-btn {
