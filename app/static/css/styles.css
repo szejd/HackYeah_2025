@@ -22,7 +22,7 @@ header {
     font-weight: bold;
 }
 
-.login-btn {
+.login-btn, .btn-outline {
     color: white;
     text-decoration: none;
     padding: 8px 12px;
