@@ -1,70 +1,120 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zaloguj się · KCW</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
+
 <body class="auth-body">
-<main class="auth-container" aria-labelledby="auth-title">
-<a class="auth-logo" href="/" aria-label="Strona główna">
-    <img src="https://mlodziez.krakow.pl/wp-content/themes/simple-bootstrap/images/mk20.svg" alt="Strona główna" style="width:128px;height:128px;"></a>
-    {% if error %}
-        <div class="flash flash-error" role="alert">{{ error }}</div>
-    {% endif %}
+    <main class="auth-container" aria-labelledby="auth-title">
+        <a class="auth-logo" href="/" aria-label="Strona główna">
+            <img src="https://mlodziez.krakow.pl/wp-content/themes/simple-bootstrap/images/mk20.svg" alt="Strona główna"
+                style="width:128px;height:128px;">
+        </a>
 
-    <section class="auth-card">
-        <h1 id="auth-title">Zaloguj się do KCW</h1>
-        <form class="auth-form">
-            <div class="form-group">
-                <label for="email">Adres email</label>
-                <input type="email" id="email" name="email" class="form-control" value="{{ email or '' }}" required autocomplete="username">
-            </div>
-            <div class="form-group">
-                <div class="label-row">
-                    <label for="password">Hasło</label>
-                    <a class="link-muted" href="#">Nie pamiętasz hasła?</a>
+        <div id="error-message" class="flash flash-error" role="alert" style="display: none;"></div>
+        <div id="success-message" class="flash flash-success" role="alert" style="display: none;"></div>
+
+        <section class="auth-card">
+            <h1 id="auth-title">Zaloguj się do KCW</h1>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Adres email</label>
+                    <input type="email" id="email" name="email" class="form-control" required autocomplete="username">
                 </div>
-                <input type="password" id="password" name="password" class="form-control" required autocomplete="current-password">
-            </div>
-            <button id="loginButton" type="submit" class="btn btn-primary">Zaloguj się</button>
-        </form>
-    </section>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="password">Hasło</label>
+                        <a class="link-muted" href="#">Nie pamiętasz hasła?</a>
+                    </div>
+                    <input type="password" id="password" name="password" class="form-control" required
+                        autocomplete="current-password">
+                </div>
+                <button id="loginButton" type="submit" class="btn btn-primary">Zaloguj się</button>
+            </form>
+        </section>
 
-    <section class="auth-secondary">
-        <p>Nowy w KCW? <a href="/register">Utwórz konto</a>.</p>
-    </section>
+        <section class="auth-secondary">
+            <p>Nowy w KCW? <a href="/navigation/register">Utwórz konto</a>.</p>
+        </section>
 
-    <footer class="auth-footer">
-        <nav aria-label="Linki pomocnicze">
-            <a href="#">Warunki</a>
-            <a href="#">Prywatność</a>
-            <a href="#">Bezpieczeństwo</a>
-            <a href="/">Kontakt</a>
-        </nav>
-        <p>© 2025 Krakowskie Centrum Wolontariatu</p>
-    </footer>
-</main>
-<script>
-    const submitButton = document.getElementById("loginButton");
-     submitButton.addEventListener("click", async () => {
-         // 1. Login
-         const loginResponse = await fetch('/login', {
-             method: 'POST',
-             headers: {
-                 'Content-Type': 'application/json',
-             },
-             body: JSON.stringify({
-                 email: document.getElementById("email").value,
-                 password: document.getElementById("password").value
-             })
-         });
-            const {access_token} = await loginResponse.json();
-            // 2. Store token (e.g., in localStorage)
-            localStorage.setItem('token', access_token);
-            window.location.href = "/";
+        <footer class="auth-footer">
+            <nav aria-label="Linki pomocnicze">
+                <a href="#">Warunki</a>
+                <a href="#">Prywatność</a>
+                <a href="#">Bezpieczeństwo</a>
+                <a href="/">Kontakt</a>
+            </nav>
+            <p>© 2025 Krakowskie Centrum Wolontariatu</p>
+        </footer>
+    </main>
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const loginButton = document.getElementById("loginButton");
+        const errorMessage = document.getElementById("error-message");
+        const successMessage = document.getElementById("success-message");
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Disable button during submission
+            loginButton.disabled = true;
+            loginButton.textContent = "Logowanie...";
+
+            try {
+                const response = await fetch('/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById("email").value,
+                        password: document.getElementById("password").value
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Store token in localStorage
+                    localStorage.setItem('token', result.access_token);
+                    localStorage.setItem('user', JSON.stringify(result.user));
+
+                    showSuccess("Zalogowano pomyślnie! Przekierowywanie...");
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1000);
+                } else {
+                    // Handle error response
+                    const errorDetail = result.detail || "Nieprawidłowy email lub hasło";
+                    showError(errorDetail);
+                    loginButton.disabled = false;
+                    loginButton.textContent = "Zaloguj się";
+                }
+            } catch (error) {
+                showError("Błąd połączenia z serwerem: " + error.message);
+                loginButton.disabled = false;
+                loginButton.textContent = "Zaloguj się";
+            }
         });
-</script>
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = "block";
+            successMessage.style.display = "none";
+            window.scrollTo(0, 0);
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = "block";
+            errorMessage.style.display = "none";
+            window.scrollTo(0, 0);
+        }
+    </script>
 </body>
+
 </html>

@@ -1,111 +1,306 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utwórz konto · KCW</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
-</head>
-<body class="auth-body">
-<main class="auth-container" aria-labelledby="register-title">
-<a class="auth-logo" href="/" aria-label="Strona główna">
-    <img src="https://mlodziez.krakow.pl/wp-content/themes/simple-bootstrap/images/mk20.svg" alt="Strona główna" style="width:128px;height:128px;"></a>
 
-    {% if error %}
-        <div class="flash flash-error" role="alert">{{ error }}</div>
-    {% endif %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utwórz konto · KCW</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+</head>
+
+<body class="auth-body">
+  <main class="auth-container" aria-labelledby="register-title">
+    <a class="auth-logo" href="/" aria-label="Strona główna">
+      <img src="https://mlodziez.krakow.pl/wp-content/themes/simple-bootstrap/images/mk20.svg" alt="Strona główna"
+        style="width:128px;height:128px;">
+    </a>
+
+    <div id="error-message" class="flash flash-error" role="alert" style="display: none;"></div>
+    <div id="success-message" class="flash flash-success" role="alert" style="display: none;"></div>
 
     <section class="auth-card">
-        <h1 id="register-title">Utwórz konto wolontariusza</h1>
-        <form class="auth-form">
-            <div class="form-group">
-                <label for="user_type">Rola</label>
-                <select id="user_type" class="form-control" name="user_type" required>
-                      <option value="">--Wskaż kim jesteś--</option>
-                      <option value="volunteer">Wolontariusz</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="email">Adres email</label>
-                <input type="email" id="email" name="email" class="form-control" value="{{ email or '' }}" required autocomplete="email">
-            </div>
-            <div class="form-group">
-                <label for="password">Hasło</label>
-                <input type="password" id="password" name="password" class="form-control" required autocomplete="new-password">
-            </div>
-            <div class="form-group">
-                <label for="first_name">Imię</label>
-                <input type="text" id="first_name" name="first_name" class="form-control" value="{{ first_name or '' }}" required>
-            </div>
-            <div class="form-group">
-                <label for="last_name">Nazwisko</label>
-                <input type="text" id="last_name" name="last_name" class="form-control" value="{{ last_name or '' }}" required>
-            </div>
-            <div class="form-group">
-                <label for="phone_number">Numer telefonu</label>
-                <input type="tel" id="phone_number" name="phone_number" class="form-control" value="{{ phone_number or '' }}" required>
-            </div>
-            <div class="form-group">
-                <label for="birth_date">Data urodzenia</label>
-                <input type="date" id="birth_date" name="birth_date" class="form-control" value="{{ birth_date or '' }}" required>
-            </div>
-            <button id="registerButton" type="submit" class="btn btn-primary">Utwórz konto</button>
-        </form>
+      <h1 id="register-title">Utwórz konto</h1>
+      <form id="registerForm" class="auth-form">
+        <!-- User Type Selection -->
+        <div class="form-group">
+          <label for="user_type">Rola *</label>
+          <select id="user_type" class="form-control" name="user_type" required>
+            <option value="">--Wskaż kim jesteś--</option>
+            <option value="volunteer">Wolontariusz</option>
+            <option value="organisation">Organizacja</option>
+            <option value="coordinator">Koordynator</option>
+          </select>
+        </div>
+
+        <!-- Common Fields -->
+        <div class="form-group">
+          <label for="email">Adres email *</label>
+          <input type="email" id="email" name="email" class="form-control" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Hasło *</label>
+          <input type="password" id="password" name="password" class="form-control" required autocomplete="new-password"
+            minlength="6">
+          <small class="form-text">Minimum 6 znaków</small>
+        </div>
+
+        <!-- Volunteer-specific fields -->
+        <div id="volunteer-fields" style="display: none;">
+          <div class="form-group">
+            <label for="vol_first_name">Imię *</label>
+            <input type="text" id="vol_first_name" name="vol_first_name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="vol_last_name">Nazwisko *</label>
+            <input type="text" id="vol_last_name" name="vol_last_name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="vol_phone_number">Numer telefonu *</label>
+            <input type="tel" id="vol_phone_number" name="vol_phone_number" class="form-control"
+              placeholder="+48 123 456 789">
+          </div>
+          <div class="form-group">
+            <label for="vol_birth_date">Data urodzenia *</label>
+            <input type="date" id="vol_birth_date" name="vol_birth_date" class="form-control">
+          </div>
+        </div>
+
+        <!-- Organisation-specific fields -->
+        <div id="organisation-fields" style="display: none;">
+          <div class="form-group">
+            <label for="org_name">Nazwa organizacji *</label>
+            <input type="text" id="org_name" name="org_name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="org_contact_person">Osoba kontaktowa *</label>
+            <input type="text" id="org_contact_person" name="org_contact_person" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="org_phone_number">Numer telefonu *</label>
+            <input type="tel" id="org_phone_number" name="org_phone_number" class="form-control"
+              placeholder="+48 123 456 789">
+          </div>
+          <div class="form-group">
+            <label for="org_address">Adres *</label>
+            <input type="text" id="org_address" name="org_address" class="form-control"
+              placeholder="ul. Przykładowa 123, 31-000 Kraków">
+          </div>
+          <div class="form-group">
+            <label for="org_description">Opis organizacji *</label>
+            <textarea id="org_description" name="org_description" class="form-control" rows="4"
+              placeholder="Krótki opis Twojej organizacji..."></textarea>
+          </div>
+        </div>
+
+        <!-- Coordinator-specific fields -->
+        <div id="coordinator-fields" style="display: none;">
+          <div class="form-group">
+            <label for="coord_first_name">Imię *</label>
+            <input type="text" id="coord_first_name" name="coord_first_name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="coord_last_name">Nazwisko *</label>
+            <input type="text" id="coord_last_name" name="coord_last_name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="coord_phone_number">Numer telefonu *</label>
+            <input type="tel" id="coord_phone_number" name="coord_phone_number" class="form-control"
+              placeholder="+48 123 456 789">
+          </div>
+          <div class="form-group">
+            <label for="coord_school">Szkoła *</label>
+            <input type="text" id="coord_school" name="coord_school" class="form-control" placeholder="Nazwa szkoły">
+          </div>
+        </div>
+
+        <button id="registerButton" type="submit" class="btn btn-primary">Utwórz konto</button>
+      </form>
     </section>
 
     <section class="auth-secondary">
-        <p>Masz już konto? <a href="/login">Zaloguj się</a>.</p>
+      <p>Masz już konto? <a href="/navigation/login">Zaloguj się</a>.</p>
     </section>
 
     <footer class="auth-footer">
-        <nav aria-label="Linki pomocnicze">
-            <a href="#">Warunki</a>
-            <a href="#">Prywatność</a>
-            <a href="#">Bezpieczeństwo</a>
-            <a href="/">Kontakt</a>
-        </nav>
-        <p>© 2025 Krakowskie Centrum Wolontariatu</p>
+      <nav aria-label="Linki pomocnicze">
+        <a href="#">Warunki</a>
+        <a href="#">Prywatność</a>
+        <a href="#">Bezpieczeństwo</a>
+        <a href="/">Kontakt</a>
+      </nav>
+      <p>© 2025 Krakowskie Centrum Wolontariatu</p>
     </footer>
-</main>
- <script>
-     const sendButton = document.getElementById("registerButton");
-     sendButton.addEventListener("click", async () => {
-      e.preventDefault();
-      const userType = document.getElementById("user_type").value;
-      const data = {user: {
-          user_type: userType,
-          password: document.getElementById("password").value,
-          email: document.getElementById("email").value,
-          },volunteer: {
-            first_name: document.getElementById("first_name").value,
-            last_name: document.getElementById("last_name").value,
-            birth_date: document.getElementById("birth_date").value,
-            phone_number: document.getElementById("phone_number").value,
-          }
-      };
-       let url;
-      if(userType === "volunteer") {
-        url = "/register/volunteer";
-      } else if(userType === "organisation") {
-        url = "/register/organisation";
+  </main>
+
+  <script>
+    // Show/hide fields based on user type selection
+    const userTypeSelect = document.getElementById("user_type");
+    const volunteerFields = document.getElementById("volunteer-fields");
+    const organisationFields = document.getElementById("organisation-fields");
+    const coordinatorFields = document.getElementById("coordinator-fields");
+    const registerTitle = document.getElementById("register-title");
+
+    userTypeSelect.addEventListener("change", function () {
+      const userType = this.value;
+
+      // Hide all type-specific fields
+      volunteerFields.style.display = "none";
+      organisationFields.style.display = "none";
+      coordinatorFields.style.display = "none";
+
+      // Clear required attributes
+      clearRequired(volunteerFields);
+      clearRequired(organisationFields);
+      clearRequired(coordinatorFields);
+
+      // Show and set required for selected type
+      if (userType === "volunteer") {
+        volunteerFields.style.display = "block";
+        setRequired(volunteerFields);
+        registerTitle.textContent = "Utwórz konto wolontariusza";
+      } else if (userType === "organisation") {
+        organisationFields.style.display = "block";
+        setRequired(organisationFields);
+        registerTitle.textContent = "Utwórz konto organizacji";
+      } else if (userType === "coordinator") {
+        coordinatorFields.style.display = "block";
+        setRequired(coordinatorFields);
+        registerTitle.textContent = "Utwórz konto koordynatora";
       } else {
-        url = "/register/"; // fallback
+        registerTitle.textContent = "Utwórz konto";
+      }
+    });
+
+    function setRequired(container) {
+      const inputs = container.querySelectorAll("input, textarea, select");
+      inputs.forEach(input => {
+        if (!input.hasAttribute("data-optional")) {
+          input.setAttribute("required", "required");
+        }
+      });
+    }
+
+    function clearRequired(container) {
+      const inputs = container.querySelectorAll("input, textarea, select");
+      inputs.forEach(input => {
+        input.removeAttribute("required");
+      });
+    }
+
+    // Handle form submission
+    const registerForm = document.getElementById("registerForm");
+    const registerButton = document.getElementById("registerButton");
+    const errorMessage = document.getElementById("error-message");
+    const successMessage = document.getElementById("success-message");
+
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const userType = document.getElementById("user_type").value;
+      if (!userType) {
+        showError("Proszę wybrać rolę");
+        return;
       }
 
+      // Disable button during submission
+      registerButton.disabled = true;
+      registerButton.textContent = "Tworzenie konta...";
+
       try {
+        let data;
+        let url;
+
+        if (userType === "volunteer") {
+          url = "/users/register/volunteer";
+          data = {
+            user: {
+              user_type: "volunteer",
+              password: document.getElementById("password").value,
+              email: document.getElementById("email").value,
+            },
+            volunteer: {
+              first_name: document.getElementById("vol_first_name").value,
+              last_name: document.getElementById("vol_last_name").value,
+              birth_date: document.getElementById("vol_birth_date").value,
+              phone_number: document.getElementById("vol_phone_number").value,
+            }
+          };
+        } else if (userType === "organisation") {
+          url = "/users/register/organisation";
+          data = {
+            user: {
+              user_type: "organisation",
+              password: document.getElementById("password").value,
+              email: document.getElementById("email").value,
+            },
+            organisation: {
+              org_name: document.getElementById("org_name").value,
+              contact_person: document.getElementById("org_contact_person").value,
+              description: document.getElementById("org_description").value,
+              phone_number: document.getElementById("org_phone_number").value,
+              address: document.getElementById("org_address").value,
+            }
+          };
+        } else if (userType === "coordinator") {
+          url = "/users/register/coordinator";
+          data = {
+            user: {
+              user_type: "coordinator",
+              password: document.getElementById("password").value,
+              email: document.getElementById("email").value,
+            },
+            coordinator: {
+              first_name: document.getElementById("coord_first_name").value,
+              last_name: document.getElementById("coord_last_name").value,
+              phone_number: document.getElementById("coord_phone_number").value,
+              school: document.getElementById("coord_school").value,
+            }
+          };
+        }
+
         const response = await fetch(url, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(data)
         });
 
         const result = await response.json();
-        document.getElementById("result").textContent = JSON.stringify(result, null, 2);
-        window.location.href = "/login";
+
+        if (response.ok) {
+          showSuccess("Konto utworzone pomyślnie! Przekierowywanie do logowania...");
+          setTimeout(() => {
+            window.location.href = "/navigation/login";
+          }, 2000);
+        } else {
+          // Handle error response
+          const errorDetail = result.detail || "Wystąpił błąd podczas rejestracji";
+          showError(errorDetail);
+          registerButton.disabled = false;
+          registerButton.textContent = "Utwórz konto";
+        }
       } catch (error) {
-        document.getElementById("result").textContent = "Error: " + error;
+        showError("Błąd połączenia z serwerem: " + error.message);
+        registerButton.disabled = false;
+        registerButton.textContent = "Utwórz konto";
       }
     });
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = "block";
+      successMessage.style.display = "none";
+      window.scrollTo(0, 0);
+    }
+
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successMessage.style.display = "block";
+      errorMessage.style.display = "none";
+      window.scrollTo(0, 0);
+    }
   </script>
 </body>
+
 </html>

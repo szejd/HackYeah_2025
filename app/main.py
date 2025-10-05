@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
-from app.routes import health_check, user
+from app.routes import user, health_check, navigation
 from app.logs import setup_logging
 from app.config import SERVER_ADDRESS
 from app.db_handler.db_connection import init_db, engine
@@ -36,6 +36,8 @@ app = FastAPI(
 
 app.include_router(health_check.router)
 app.include_router(user.router)
+app.include_router(navigation.router)
+
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
@@ -45,16 +47,6 @@ templates = Jinja2Templates(directory="app/templates")
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-
-
-@app.get("/login", response_class=HTMLResponse)
-async def login_form(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request, "error": None})
-
-
-@app.get("/register", response_class=HTMLResponse)
-async def register_form(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request, "error": None})
 
 
 if __name__ == "__main__":
