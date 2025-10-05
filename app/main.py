@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 
 from app.routes import health_check, user
-from app.config import SERVER_ADDRESS
+from app.config import DB_HOST
 from app.logs import setup_logging
 
 setup_logging()
@@ -45,7 +45,7 @@ async def register_form(request: Request):
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",  # Module path to FastAPI instance
-        host=SERVER_ADDRESS,  # or "0.0.0.0" to be reachable externally
+        host=DB_HOST,  # or "0.0.0.0" to be reachable externally
         port=8000,
         reload=True,  # Auto-reload on code changes (dev only)
     )
