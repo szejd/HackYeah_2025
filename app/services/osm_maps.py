@@ -11,14 +11,29 @@ class OSMMap:
         self.zoom_start = zoom_start
         self.markers: list[folium.Marker] = []
 
-    def add_marker(self, lat, lon, label=None, category: LocationType = LocationType.ORGANISATION):
+    def add_marker(
+        self, lat, lon, label=None, category: LocationType = LocationType.ORGANISATION, description: str | None = None
+    ):
+        popup = label if label else f"({lat}, {lon})"
         if category == LocationType.ORGANISATION:
             icon = folium.Icon(color="blue")
         elif category == LocationType.EVENT:
+            popup = f"""
+                <div style="font-family:Arial,sans-serif;max-width:350px;padding:16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);background:#fff;">
+                    <h1 style="margin-top:0;color:#2c3e50;">Event: {popup}</h1>
+                    <p style="margin:4px 0;color:#34495e;">{description if description is not None else ""}</p>
+                    <a href="YOUR_REGISTRATION_URL"
+                       style="display:inline-block;padding:10px 24px;margin-top:12px;background:#3498db;color:#fff;font-weight:bold;text-decoration:none;border-radius:4px;box-shadow:0 1px 4px rgba(52,152,219,0.2);transition:background 0.2s;"
+                       onmouseover="this.style.background='#2980b9';"
+                       onmouseout="this.style.background='#3498db';">
+                       Zarejestruj!
+                    </a>
+                </div>
+            """
             icon = folium.Icon(color="pink")
         else:
             return
-        marker = folium.Marker((lat, lon), popup=label if label else f"({lat}, {lon})", icon=icon)
+        marker = folium.Marker((lat, lon), popup=popup, icon=icon)
         # marker = folium.Marker((lat, lon), popup=html_message, icon=icon,
         #               tooltip=marker_object.marker_name)
         # self.markers.append({'lat': lat, 'lon': lon, 'label': label})
@@ -40,7 +55,13 @@ def generate_map_with_locations(locations: list[LocationData], map_filename: str
     my_map = OSMMap()
     # my_map.add_marker(50.0530, 19.9336, "Smok Wawelski", LocationType.ORGANISATION)
     # my_map.add_marker(50.0617, 19.9334, "Collegium Maius", LocationType.ORGANISATION)
-    # my_map.add_marker(50.0677, 19.9915, "HackYeah 2025", LocationType.EVENT)
+    my_map.add_marker(
+        50.0677,
+        19.9915,
+        "HackYeah 2025",
+        LocationType.EVENT,
+        description="największy stacjonarny hackathon w Europie, który odbywa się w dniach 4-5 października 2025 w TAURON Arenie Kraków",
+    )
     for location in locations:
         my_map.add_marker(location.latitude, location.longitude, location.name)
     my_map.generate_map(map_location=map_location)

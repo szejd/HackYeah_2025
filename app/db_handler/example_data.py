@@ -8,11 +8,15 @@ from app.models.location import AddLocation, LocationData
 from app.schemas.db_models import User
 from app.schemas.enums import UserType, LocationType
 from app.services.osm_maps import generate_map_with_locations
+from app.db_handler.db_connection import SessionLocal
 
 
 def add_data(session: Session):
     add_schools_as_organisations(session=session)
+    add_events(session)
 
+def add_events(session: Session):
+    pass
 
 def add_schools_as_organisations(session: Session):
     primary_schools_csv_path = os.path.join(
