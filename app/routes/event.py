@@ -19,12 +19,7 @@ def _to_iso_date(dt: datetime | date) -> str:
 @router.get("/upcoming")
 def get_upcoming_events(db: Session = Depends(get_db)) -> List[dict]:
     today = datetime.now()
-    q = (
-        db.query(Event)
-        .filter(Event.start_date >= today)
-        .order_by(Event.start_date.asc())
-        .limit(500)
-    )
+    q = db.query(Event).filter(Event.start_date >= today).order_by(Event.start_date.asc()).limit(500)
 
     events = []
     for ev in q.all():

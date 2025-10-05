@@ -34,16 +34,17 @@ def add_events(session: Session):
     location_data = AddLocation(address="Stanisława Lema 7, 31-571 Kraków", location_name="Tauron Arena")
     location = add_address(session=session, location_data=location_data)
 
-    event = Event(name="HackYeah 2025",
-                  description="największy stacjonarny hackathon w Europie, który odbywa się w dniach 4-5 października 2025 w TAURON Arenie Kraków",
-                  start_date=datetime.datetime.strptime("2025-10-04", "%Y-%m-%d"),
-                  end_date=datetime.datetime.strptime("2025-10-05", "%Y-%m-%d"),
-                  signup_start=datetime.datetime.strptime("2025-07-04", "%Y-%m-%d"),
-                  signup_end=datetime.datetime.strptime("2025-10-04", "%Y-%m-%d"),
-                  location_id=location.id,
-                  organisation_id=org.id,
-                  max_no_of_users=400
-                  )
+    event = Event(
+        name="HackYeah 2025",
+        description="największy stacjonarny hackathon w Europie, który odbywa się w dniach 4-5 października 2025 w TAURON Arenie Kraków",
+        start_date=datetime.datetime.strptime("2025-10-04", "%Y-%m-%d"),
+        end_date=datetime.datetime.strptime("2025-10-05", "%Y-%m-%d"),
+        signup_start=datetime.datetime.strptime("2025-07-04", "%Y-%m-%d"),
+        signup_end=datetime.datetime.strptime("2025-10-04", "%Y-%m-%d"),
+        location_id=location.id,
+        organisation_id=org.id,
+        max_no_of_users=400,
+    )
     session.add(event)
     session.commit()
     session.refresh(event)
@@ -101,5 +102,5 @@ def generate_map_from_example_data():
         )
     generate_map_with_locations(location_datas)
 
-generate_map_from_example_data()
 
+generate_map_from_example_data()

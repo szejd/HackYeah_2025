@@ -16,5 +16,6 @@ def register_for_event(session: Session, registration_data: EventUserRegistratio
         raise e
     return registration
 
+
 def create_event(session: Session):
     pass
